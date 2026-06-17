@@ -1,3 +1,7 @@
+---
+lang: pt-BR
+---
+
 # Tarefa 2 - TEG
 
 **Equipes**: MÁXIMO 3 MEMBROS.

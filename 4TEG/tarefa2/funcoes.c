@@ -3,17 +3,6 @@
 /*
     Criacao
 */
-Vertice* criar_vertice(char* palavra){
-    Vertice* vertice = (Vertice*)malloc(sizeof(Vertice));
-    if(!vertice){
-        printf("Nao foi possivel criar o vertice.");
-    }
-    vertice->posterior = NULL;
-    vertice->palavra = palavra;
-    vertice->grau = 0;
-
-    return vertice;
-}
 
 Grafo* criar_grafo(int max_vertices){
     Grafo* grafo = (Grafo*)malloc(sizeof(Grafo));
@@ -26,9 +15,10 @@ Grafo* criar_grafo(int max_vertices){
         printf("Nao foi possivel criar a lista de adjacencias.");
     }
     for(int i=0; i < max_vertices; i++){
-        grafo->lista[i].posterior = NULL;
+        grafo->lista[i].listaAdj = NULL;
         grafo->lista[i].palavra = NULL;
         grafo->lista[i].grau = 0;
+        grafo->lista[i].valor = i;
     }
 
     grafo->num_vertices = max_vertices;
@@ -41,28 +31,17 @@ Grafo* criar_grafo(int max_vertices){
     "palavra" serah a palavra do novo vertice a ser encadeado.
 */
 void inserir_vertice(Grafo* grafo, char* origem, char* nova){
-    Vertice* v_origem = NULL;
-    for(int i=0; i<grafo->num_vertices; i++){
-        if(grafo->lista[i].palavra && !strcmp(grafo->lista[i].palavra, origem)){
-            v_origem = &(grafo->lista[i]);
-            break;
-        }
-    }
-    if(!v_origem){return;}
+    int o = encontrar_indice(grafo, origem);
+    int d = encontrar_indice(grafo, nova);
 
-    Vertice* v_destino = criar_vertice(nova);     
+    if(o == -1 || d == -1) return;
 
-    // Caso o vertice de origem nao estiver encadeado a nenhum vertice.
-    if(v_origem->posterior == NULL){
-        v_origem->posterior = v_destino;
-    }
-    else{
-        Vertice* walker = v_origem->posterior;
-        while(walker->posterior != NULL){
-            walker = walker->posterior;
-        }
-        walker->posterior = v_destino;
-    }
+    NoAdj* novo = malloc(sizeof(NoAdj));
+    novo->valor = d;
+    novo->prox = grafo->lista[o].listaAdj;
+
+    grafo->lista[o].listaAdj = novo;
+    grafo->lista[o].grau++;
 }
 
 /*
@@ -86,11 +65,47 @@ void adicionar_aresta(Grafo* grafo, char* origem, char* destino){
     Importacao da base de dados
 */
 
+int diferenca_uma_letra(char* a, char* b) {
+    int dif = 0;
+
+    for(int i = 0; i < 4; i++) {
+        if(a[i] != b[i]) {
+            dif++;
+            if(dif > 1) return 0;
+        }
+    }
+
+    return dif == 1;
+}
+
+void criar_arestas(Grafo* g) {
+    printf("iniciando criacao de arestas...\n");
+
+    for(int i = 0; i < g->num_vertices; i++) {
+
+        if(i % 200 == 0){
+            printf("processando i = %d\n", i);
+        }
+
+        for(int j = i + 1; j < g->num_vertices; j++) {
+
+            char* p = g->lista[i].palavra;
+            char* q = g->lista[j].palavra;
+
+            if(p && q && diferenca_uma_letra(p, q)) {
+                adicionar_aresta(g, p, q);
+            }
+        }
+    }
+
+    printf("fim criacao de arestas\n");
+}
 /*
     Abre o arquivo CSV e posteriormente alimenta as lista de adjacencias no
     grafo.
 */
 void carregar_lista_adjacencias(Grafo** grafo, char* path){
+    
     FILE* file = fopen(path, "r");
     if(!file){
         printf("Erro ao abrir o arquivo\n");
@@ -112,14 +127,18 @@ void carregar_lista_adjacencias(Grafo** grafo, char* path){
         
         // Coleta os vertices de origem.
         // id < 100 ? printf("%s", buffer) : 0;
-        (*grafo)->lista[id++].palavra = strdup(buffer);
+        (*grafo)->lista[id].palavra = strdup(buffer);
+        (*grafo)->lista[id].valor = id;
+        id++;
     }
     (*grafo)->num_vertices = id;
 
     /*
         CRIAR ADJACENCIAS DOS VERTICES
     */
-
+    
+    criar_arestas(*grafo);
+    
 
 
 
@@ -154,18 +173,239 @@ int grau_minimo(Grafo* grafo){
     Caminho minimo por Dijkstra
 */
 
+int vertice_maior_grau_componente(Grafo* grafo, int* componente, int tamanho) {
+    int maior = componente[0];
+
+    for(int i = 1; i < tamanho; i++){
+        if(grafo->lista[componente[i]].grau > grafo->lista[maior].grau){
+            maior = componente[i];
+        }
+    }
+
+    return maior;
+}
+
+int vertice_menor_grau_componente(Grafo* grafo, int* componente, int tamanho){
+    int menor = componente[0];
+
+    for(int i = 1; i < tamanho; i++){
+        if(grafo->lista[componente[i]].grau < grafo->lista[menor].grau){
+            menor = componente[i];
+        }
+    }
+
+    return menor;
+}
+
+void analisar_componentes(Grafo* grafo){
+    int num_componentes = 0;
+    int* tamanhos = calloc(grafo->num_vertices, sizeof(int));
+
+    int** componentes =componentesConexos(grafo, &num_componentes, tamanhos);
+
+    printf("Componentes: %d\n", num_componentes);
+
+    for(int i = 0; i < num_componentes; i++){
+
+        int vMaior = vertice_maior_grau_componente(grafo, componentes[i], tamanhos[i]);
+
+        int vMenor = vertice_menor_grau_componente( grafo, componentes[i],tamanhos[i]);
+
+        printf("\nComponente %d\n", i + 1);
+        printf("Tamanho: %d\n", tamanhos[i]);
+
+        printf("Maior grau: %s (%d)\n", grafo->lista[vMaior].palavra, grafo->lista[vMaior].grau);
+
+        printf("Menor grau: %s (%d)\n", grafo->lista[vMenor].palavra, grafo->lista[vMenor].grau);
+    }
+}
+
 
 
 void printar_lista_adjacencias(Grafo* grafo, int max_vertical, int max_horizontal){
-    Vertice* walker = NULL;
+    
     for(int i = 0; i < max_vertical; i++){
-        walker = &(grafo->lista[i]);
+        NoAdj* walker = grafo->lista[i].listaAdj;
 
         int count = 0;
         while(walker && count++ < max_horizontal){
-            printf("(%d)[%s]{%d} -> ", i+1, walker->palavra, grafo->lista[i].grau);
-            walker = walker->posterior;
+            printf("(%d)[%s]{%d} -> ", i+1, grafo->lista[i].palavra, grafo->lista[i].grau);
+            walker = walker->prox;
         }
         printf("NULL\n");
     }
+}
+
+int ehMultigrafo(Grafo* grafo, int* lacos, int* repeticoes){
+
+    for(int i = 1; i < grafo->num_vertices; i++){
+
+        for(NoAdj* a = grafo->lista[i].listaAdj; a; a = a->prox){
+
+            if(a->valor == i){
+                (*lacos)++;
+            }
+
+            for(NoAdj* b = a->prox; b; b = b->prox){
+                if(b->valor == a->valor){
+                    (*repeticoes)++;
+                }
+            }
+        }
+    }
+
+    return (*lacos > 0 || *repeticoes > 0);
+}
+
+/*
+    Busca por DFS, com algumas alteracoes para a descricao dos componentes
+    conexos:
+        - tamanho: tamanho do componente encontrado pela DFS
+        - componente: vetor com as "raizes", ou seja, os valores dos vertices
+        que compoem um mesmo componente conexo (distribuicao).
+*/
+void DFS_G(Grafo* grafo, int raiz, int* vet_marca, int* tamanho, int*componente){
+    // Caso nao se queira retornar um vetor com os valores marcados.
+
+    vet_marca[raiz] = 1;
+    // printf("%d ", raiz);
+    componente[*tamanho] = raiz;
+    (*tamanho)++;
+    
+    NoAdj* walker = grafo->lista[raiz].listaAdj;
+    while(walker != NULL){
+        int idx = walker->valor;
+        if(idx >= 0 && vet_marca[idx] == 0){
+            DFS_G(grafo, walker->valor, vet_marca, tamanho, componente);
+        }
+        walker = walker->prox;
+    }
+}
+
+
+/*
+    Deve-se descrever o(s) componente(s) conexo(s) contido(s) no grafo a partir
+    das características abaixo:
+        1. Distribuicao dos componentes conexos;
+        2. Quantidade de componentes conexos;
+        3. Tamanhos dos componentes conexos.
+*/
+int** componentesConexos(Grafo* grafo, int* num_componentes, int* tamanhos){
+    // Distribuicao dos vertices por componentes conexos
+    int** componentes = (int**)calloc(grafo->num_vertices, sizeof(int*));
+    // Vetor principal de comparacao dos vertices
+    int* marcados = (int*)calloc(grafo->num_vertices, sizeof(int));
+    *num_componentes = 0;
+
+    for(int i=0; i<grafo->num_vertices; i++){
+        componentes[*num_componentes] = (int*)calloc(grafo->num_vertices, sizeof(int));
+        if(!marcados[i]){
+            tamanhos[*num_componentes] = 0;
+            DFS_G(grafo, i, marcados, &(tamanhos[*num_componentes]), componentes[*num_componentes]);
+            (*num_componentes)++;
+        }
+    }
+    return componentes;
+}
+
+
+int encontrar_indice(Grafo* g, char* palavra){
+    for(int i = 0; i < g->num_vertices; i++){
+        if(g->lista[i].palavra != NULL && strcmp(g->lista[i].palavra, palavra) == 0){
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+void dijkstra(Grafo* g, char* origem, char* destino){
+
+    
+    int src = encontrar_indice(g, origem);
+    int dst = encontrar_indice(g, destino);
+
+    if(src == -1 || dst == -1){
+        printf("Palavra nao encontrada.\n");
+        return; 
+    }
+
+    int n = g->num_vertices;
+
+    int IN[n];          // conjunto fechado
+    int d[n];           // distâncias
+    int s[n];           // predecessores
+
+    for(int i = 0; i < n; i++){
+        IN[i] = 0;
+        d[i] = 999999;
+        s[i] = -1;
+    }
+
+    // IN = {x}
+    IN[src] = 1;
+    d[src] = 0;
+
+    // inicialização de vizinhos de x
+    for(NoAdj* v = g->lista[src].listaAdj; v; v = v->prox){
+        d[v->valor] = 1;   // peso = 1
+        s[v->valor] = src;
+    }
+
+    // enquanto existir vértice fora de IN
+    while(1){
+
+        int p = -1;
+        int min = 999999;
+
+        // p = nó fora de IN com menor d[z]
+        for(int i = 0; i < n; i++){
+            if(!IN[i] && d[i] < min){
+                min = d[i];
+                p = i;
+            }
+        }
+
+        if(p == -1) break;
+
+        IN[p] = 1;
+
+        // relaxamento
+        for(NoAdj* v = g->lista[p].listaAdj; v; v = v->prox){
+
+            int z = v->valor;
+
+            if(!IN[z]){
+
+                int distAnterior = d[z];
+
+                if(d[p] + 1 < d[z]){
+                    d[z] = d[p] + 1;
+                    s[z] = p;
+                }
+            }
+        }
+    }
+
+    // reconstrução do caminho
+    if(d[dst] == 999999){
+        printf("Nao existe caminho.\n");
+        return;
+    }
+
+    printf("\nCaminho minimo (distancia %d):\n", d[dst]);
+
+    int path[n];
+    int k = 0;
+
+    for(int v = dst; v != -1; v = s[v]){
+        path[k++] = v;
+    }
+
+    for(int i = k - 1; i >= 0; i--){
+        printf("%s", g->lista[path[i]].palavra);
+        if(i > 0) printf(" -> ");
+    }
+
+    printf("\n");
 }

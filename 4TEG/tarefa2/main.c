@@ -7,12 +7,59 @@ clear && gcc main.c funcoes.c -o main && ./main
 
 */
 
-void main(){
-    char* arquivo = "palavras_filtradas_4letras.txt";
-    Grafo** grafo;
-    carregar_lista_adjacencias(grafo, arquivo);
-    int num_vertices = (*grafo)->num_vertices;
+int main(){
+   
+    Grafo* grafo = NULL;
+    
+    carregar_lista_adjacencias(&grafo, "palavras_filtradas_4letras.txt");
 
-    printar_lista_adjacencias(*grafo, 20, 10);
-    printf("%d\n", (*grafo)->num_vertices);
+    printf("\nVertices: %d\n", grafo->num_vertices);
+    printf("Grau maximo: %d\n", grau_maximo(grafo));
+    printf("Grau minimo: %d\n\n", grau_minimo(grafo));
+
+    int lacos = 0, repeticoes = 0;
+
+    if(ehMultigrafo(grafo, &lacos, &repeticoes)){
+        printf("Eh multigrafo: SIM\n");
+        printf("Lacos: %d\n", lacos);
+        printf("Arestas repetidas: %d\n\n", repeticoes);
+    } else {
+        printf("Eh multigrafo: NAO\n\n");
+    }
+
+    int num_componentes = 0;
+    int* tamanhos = calloc(grafo->num_vertices, sizeof(int));
+    int** componentes = componentesConexos(grafo, &num_componentes, tamanhos);
+
+    int soma = 0;
+
+    for(int i = 0; i < num_componentes; i++){
+        soma += tamanhos[i];
+    }
+
+    printf("Soma: %d\n", soma);
+    printf("Vertices: %d\n\n", grafo->num_vertices);
+
+    printf("Componentes: %d\n\n", num_componentes);
+
+    for(int i = 0; i < num_componentes; i++){
+        printf("Componente %d: %d vertices\n", i + 1, tamanhos[i]);
+    }
+    printf("\n");
+    
+    analisar_componentes(grafo);
+
+    char origem[10], destino[10];
+
+    printf("Origem: ");
+    scanf("%s", origem);
+
+    printf("Destino: ");
+    scanf("%s", destino);
+
+    dijkstra(grafo, origem, destino);
+
+    return 0;
 }
+    
+
