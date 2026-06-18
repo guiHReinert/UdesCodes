@@ -1,5 +1,5 @@
-#ifndef ARQ_H
-#define ARQ_H
+#ifndef FUNCOES_H
+#define FUNCOES_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +23,7 @@ typedef struct Vertice{
     O grafo apresenta uma lista de adjacencias composta por todos os vertices
     encadeados ordenadamente com os vertices com arestas em comum.
 */
-typedef struct{
+typedef struct Grafo{
     Vertice* lista;
     int num_vertices;
 } Grafo;

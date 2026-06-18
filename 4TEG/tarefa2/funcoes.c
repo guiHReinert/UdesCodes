@@ -201,7 +201,7 @@ void analisar_componentes(Grafo* grafo){
     int num_componentes = 0;
     int* tamanhos = calloc(grafo->num_vertices, sizeof(int));
 
-    int** componentes =componentesConexos(grafo, &num_componentes, tamanhos);
+    int** componentes = componentesConexos(grafo, &num_componentes, tamanhos);
 
     printf("Componentes: %d\n", num_componentes);
 
