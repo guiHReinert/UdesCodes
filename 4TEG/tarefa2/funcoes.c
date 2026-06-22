@@ -171,7 +171,76 @@ int grau_minimo(Grafo* grafo){
 
 int eh_multigrafo(Grafo* grafo, int* lacos, int* repeticoes){
 
+<<<<<<< HEAD
     for(int i = 0; i < grafo->num_vertices; i++){
+=======
+int vertice_maior_grau_componente(Grafo* grafo, int* componente, int tamanho) {
+    int maior = componente[0];
+
+    for(int i = 1; i < tamanho; i++){
+        if(grafo->lista[componente[i]].grau > grafo->lista[maior].grau){
+            maior = componente[i];
+        }
+    }
+
+    return maior;
+}
+
+int vertice_menor_grau_componente(Grafo* grafo, int* componente, int tamanho){
+    int menor = componente[0];
+
+    for(int i = 1; i < tamanho; i++){
+        if(grafo->lista[componente[i]].grau < grafo->lista[menor].grau){
+            menor = componente[i];
+        }
+    }
+
+    return menor;
+}
+
+void analisar_componentes(Grafo* grafo){
+    int num_componentes = 0;
+    int* tamanhos = calloc(grafo->num_vertices, sizeof(int));
+
+    int** componentes = componentesConexos(grafo, &num_componentes, tamanhos);
+
+    printf("Componentes: %d\n", num_componentes);
+
+    for(int i = 0; i < num_componentes; i++){
+
+        int vMaior = vertice_maior_grau_componente(grafo, componentes[i], tamanhos[i]);
+
+        int vMenor = vertice_menor_grau_componente( grafo, componentes[i],tamanhos[i]);
+
+        printf("\nComponente %d\n", i + 1);
+        printf("Tamanho: %d\n", tamanhos[i]);
+
+        printf("Maior grau: %s (%d)\n", grafo->lista[vMaior].palavra, grafo->lista[vMaior].grau);
+
+        printf("Menor grau: %s (%d)\n", grafo->lista[vMenor].palavra, grafo->lista[vMenor].grau);
+    }
+}
+
+
+
+void printar_lista_adjacencias(Grafo* grafo, int max_vertical, int max_horizontal){
+    
+    for(int i = 0; i < max_vertical; i++){
+        NoAdj* walker = grafo->lista[i].listaAdj;
+
+        int count = 0;
+        while(walker && count++ < max_horizontal){
+            printf("(%d)[%s]{%d} -> ", i+1, grafo->lista[i].palavra, grafo->lista[i].grau);
+            walker = walker->prox;
+        }
+        printf("NULL\n");
+    }
+}
+
+int ehMultigrafo(Grafo* grafo, int* lacos, int* repeticoes){
+
+    for(int i = 1; i < grafo->num_vertices; i++){
+>>>>>>> 2fdd3f3c14ed3244f8dca12a984de833cb88d6f9
 
         for(NoAdj* a = grafo->lista[i].listaAdj; a; a = a->prox){
 

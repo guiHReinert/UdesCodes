@@ -1,7 +1,3 @@
----
-lang: pt-BR
----
-
 # Tarefa 2 - TEG
 
 **Equipes**: MÁXIMO 3 MEMBROS.
@@ -23,7 +19,7 @@ posição de caractere.
 A ideia é verificar a transformação de palavras, exemplo: "LAGO" em "CENA", LAGO ->
 LOGO -> LEGO -> CEGO -> CEGA -> CENA.
 
-## Requisitos:
+## Requisitos
 
 1. Implementação em linguagem C;
 2. O sistema tem que permitir a carga primária do grafo a partir da base de palavras
