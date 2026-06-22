@@ -44,6 +44,15 @@ void inserir_vertice(Grafo* grafo, char* origem, char* nova){
     grafo->lista[o].grau++;
 }
 
+int encontrar_indice(Grafo* g, char* palavra){
+    for(int i = 0; i < g->num_vertices; i++){
+        if(g->lista[i].palavra != NULL && strcmp(g->lista[i].palavra, palavra) == 0){
+            return i;
+        }
+    }
+    return -1;
+}
+
 /*
     Adiciona a aresta no vertice "origem" e a aresta reciproca para o vertice
     "destino". Aqui eh desconsiderado o vertice 0 na intepretacao do grafo, mas
@@ -61,23 +70,6 @@ void adicionar_aresta(Grafo* grafo, char* origem, char* destino){
     }
 }
 
-/*
-    Importacao da base de dados
-*/
-
-int diferenca_uma_letra(char* a, char* b) {
-    int dif = 0;
-
-    for(int i = 0; i < 4; i++) {
-        if(a[i] != b[i]) {
-            dif++;
-            if(dif > 1) return 0;
-        }
-    }
-
-    return dif == 1;
-}
-
 void criar_arestas(Grafo* g) {
     printf("iniciando criacao de arestas...\n");
 
@@ -92,7 +84,7 @@ void criar_arestas(Grafo* g) {
             char* p = g->lista[i].palavra;
             char* q = g->lista[j].palavra;
 
-            if(p && q && diferenca_uma_letra(p, q)) {
+            if(p && q && diferenciar_uma_letra(p, q)) {
                 adicionar_aresta(g, p, q);
             }
         }
@@ -100,8 +92,26 @@ void criar_arestas(Grafo* g) {
 
     printf("fim criacao de arestas\n");
 }
+
+int diferenciar_uma_letra(char* a, char* b) {
+    int dif = 0;
+
+    for(int i = 0; i < 4; i++) {
+        if(a[i] != b[i]) {
+            dif++;
+            if(dif > 1) return 0;
+        }
+    }
+
+    return dif == 1;
+}
+
 /*
-    Abre o arquivo CSV e posteriormente alimenta as lista de adjacencias no
+    Importacao da base de dados
+*/
+
+/*
+    Abre o arquivo CSV e posteriormente alimenta a lista de adjacencias no
     grafo.
 */
 void carregar_lista_adjacencias(Grafo** grafo, char* path){
@@ -132,27 +142,17 @@ void carregar_lista_adjacencias(Grafo** grafo, char* path){
         id++;
     }
     (*grafo)->num_vertices = id;
-
-    /*
-        CRIAR ADJACENCIAS DOS VERTICES
-    */
-    
     criar_arestas(*grafo);
-    
-
-
-
-
 
     fclose(file);
 }
 
 /*
-    Analise de componentes
+    Analise dos componentes conexos
 */
 
 /*
-    Graus maximo e minimo do grafo. O vertice 0 eh novamente desconsiderado.
+    Graus maximo e minimo do grafo.
 */
 int grau_maximo(Grafo* grafo){
     int maior = 0;
@@ -169,76 +169,9 @@ int grau_minimo(Grafo* grafo){
     return menor;
 }
 
-/*
-    Caminho minimo por Dijkstra
-*/
+int eh_multigrafo(Grafo* grafo, int* lacos, int* repeticoes){
 
-int vertice_maior_grau_componente(Grafo* grafo, int* componente, int tamanho) {
-    int maior = componente[0];
-
-    for(int i = 1; i < tamanho; i++){
-        if(grafo->lista[componente[i]].grau > grafo->lista[maior].grau){
-            maior = componente[i];
-        }
-    }
-
-    return maior;
-}
-
-int vertice_menor_grau_componente(Grafo* grafo, int* componente, int tamanho){
-    int menor = componente[0];
-
-    for(int i = 1; i < tamanho; i++){
-        if(grafo->lista[componente[i]].grau < grafo->lista[menor].grau){
-            menor = componente[i];
-        }
-    }
-
-    return menor;
-}
-
-void analisar_componentes(Grafo* grafo){
-    int num_componentes = 0;
-    int* tamanhos = calloc(grafo->num_vertices, sizeof(int));
-
-    int** componentes =componentesConexos(grafo, &num_componentes, tamanhos);
-
-    printf("Componentes: %d\n", num_componentes);
-
-    for(int i = 0; i < num_componentes; i++){
-
-        int vMaior = vertice_maior_grau_componente(grafo, componentes[i], tamanhos[i]);
-
-        int vMenor = vertice_menor_grau_componente( grafo, componentes[i],tamanhos[i]);
-
-        printf("\nComponente %d\n", i + 1);
-        printf("Tamanho: %d\n", tamanhos[i]);
-
-        printf("Maior grau: %s (%d)\n", grafo->lista[vMaior].palavra, grafo->lista[vMaior].grau);
-
-        printf("Menor grau: %s (%d)\n", grafo->lista[vMenor].palavra, grafo->lista[vMenor].grau);
-    }
-}
-
-
-
-void printar_lista_adjacencias(Grafo* grafo, int max_vertical, int max_horizontal){
-    
-    for(int i = 0; i < max_vertical; i++){
-        NoAdj* walker = grafo->lista[i].listaAdj;
-
-        int count = 0;
-        while(walker && count++ < max_horizontal){
-            printf("(%d)[%s]{%d} -> ", i+1, grafo->lista[i].palavra, grafo->lista[i].grau);
-            walker = walker->prox;
-        }
-        printf("NULL\n");
-    }
-}
-
-int ehMultigrafo(Grafo* grafo, int* lacos, int* repeticoes){
-
-    for(int i = 1; i < grafo->num_vertices; i++){
+    for(int i = 0; i < grafo->num_vertices; i++){
 
         for(NoAdj* a = grafo->lista[i].listaAdj; a; a = a->prox){
 
@@ -284,13 +217,13 @@ void DFS_G(Grafo* grafo, int raiz, int* vet_marca, int* tamanho, int*componente)
 
 
 /*
-    Deve-se descrever o(s) componente(s) conexo(s) contido(s) no grafo a partir
-    das características abaixo:
+    Deve-se descrever os componentes conexos contidos no grafo a partir das
+    características abaixo:
         1. Distribuicao dos componentes conexos;
         2. Quantidade de componentes conexos;
         3. Tamanhos dos componentes conexos.
 */
-int** componentesConexos(Grafo* grafo, int* num_componentes, int* tamanhos){
+int** componentes_conexos(Grafo* grafo, int* num_componentes, int* tamanhos){
     // Distribuicao dos vertices por componentes conexos
     int** componentes = (int**)calloc(grafo->num_vertices, sizeof(int*));
     // Vetor principal de comparacao dos vertices
@@ -308,20 +241,10 @@ int** componentesConexos(Grafo* grafo, int* num_componentes, int* tamanhos){
     return componentes;
 }
 
-
-int encontrar_indice(Grafo* g, char* palavra){
-    for(int i = 0; i < g->num_vertices; i++){
-        if(g->lista[i].palavra != NULL && strcmp(g->lista[i].palavra, palavra) == 0){
-            return i;
-        }
-    }
-    return -1;
-}
-
-
+/*
+    Busca do caminho minimo por Dijkstra
+*/
 void dijkstra(Grafo* g, char* origem, char* destino){
-
-    
     int src = encontrar_indice(g, origem);
     int dst = encontrar_indice(g, destino);
 
@@ -408,4 +331,67 @@ void dijkstra(Grafo* g, char* origem, char* destino){
     }
 
     printf("\n");
+}
+
+/* 
+    Exposicao dos dados
+*/
+
+void printar_lista_adjacencias(Grafo* grafo, int max_vertical, int max_horizontal){
+    
+    for(int i = 0; i < max_vertical; i++){
+        NoAdj* walker = grafo->lista[i].listaAdj;
+
+        int count = 0;
+        while(walker && count++ < max_horizontal){
+            printf("(%d)[%s]{%d} -> ",
+                i+1, grafo->lista[i].palavra, grafo->lista[i].grau);
+            walker = walker->prox;
+        }
+        printf("NULL\n");
+    }
+}
+
+void analisar_componentes(Grafo* grafo){
+    int num_componentes = 0;
+    int* tamanhos = calloc(grafo->num_vertices, sizeof(int));
+
+    int** componentes = componentes_conexos(grafo, &num_componentes, tamanhos);
+
+    printf("Componentes: %d\n", num_componentes);
+
+    for(int i = 0; i < num_componentes; i++){
+
+        int vMaior = maior_grau_componente(grafo, componentes[i], tamanhos[i]);
+        int vMenor = menor_grau_componente(grafo, componentes[i], tamanhos[i]);
+
+        printf("\nComponente %d\n", i + 1);
+        printf("Tamanho: %d\n", tamanhos[i]);
+
+        printf("Maior grau: %s (%d)\n",
+            grafo->lista[vMaior].palavra, grafo->lista[vMaior].grau);
+
+        printf("Menor grau: %s (%d)\n",
+            grafo->lista[vMenor].palavra, grafo->lista[vMenor].grau);
+    }
+}
+
+int maior_grau_componente(Grafo* grafo, int* componente, int tamanho) {
+    int maior = componente[0];
+    for(int i = 1; i < tamanho; i++){
+        if(grafo->lista[componente[i]].grau > grafo->lista[maior].grau){
+            maior = componente[i];
+        }
+    }
+    return maior;
+}
+
+int menor_grau_componente(Grafo* grafo, int* componente, int tamanho){
+    int menor = componente[0];
+    for(int i = 1; i < tamanho; i++){
+        if(grafo->lista[componente[i]].grau < grafo->lista[menor].grau){
+            menor = componente[i];
+        }
+    }
+    return menor;
 }

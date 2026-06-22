@@ -35,9 +35,9 @@
 
 Escrever um código na linguagem C capaz de extrair as os dados inteiros contidos em um arquivo de entrada CSV sob o formato de uma lista de adjacências. O código deverá então criar outra lista de adjacências para interpretar as principais características referentes ao grafo, bem como
 
-1. Número total de vértices;  
-2. Grau máximo e grau mínimo;  
-3. Se ele é simples um um multigrafo;  
+1. Número total de vértices;
+2. Grau máximo e grau mínimo;
+3. Se ele é simples um um multigrafo;
 4. Detalhar os componentes conexos existentes, caso houver mais de um, logo a distribuição dos vértices em cada componente, a sua quantidade e tamanhos.
 
 O código deverá ser capaz de ser compilado no Ubuntu e organizado em uma pasta compactada, conforme as especificações de entrega no MOODLE.
@@ -60,7 +60,7 @@ O arquivo principal de compilação do código é `main.c`. Nele é incluído o 
 
 A primeira etapa do código é criar duas variáveis:
 
-- `char* arquivo`: uma string contendo o endereço do arquivo a ser lido;  
+- `char* arquivo`: uma string contendo o endereço do arquivo a ser lido;
 - `int num_vertices`: inteiro referente ao número total de vértices \+ 1, servindo de limite para a os vetores posteriormente computados.
 
 Ambas são utilizadas pela função `varreduraListaAdjacências()`, que atualiza o valor de `num_vertices` para o input de um arquivo sem antes conhecer o seu tamanho. 
@@ -75,8 +75,8 @@ A Figura 3 mostra a função `ehMultigrafo()` e os dois valores inteiros atualiz
 
 A Figura 4 mostra a descrição dos componentes conexos composta por 3 variáveis associadas à função `componentesConexos()`:
 
-- `int num_componentes`: quantidade de componentes;  
-- `int* tamanhos`: quantidade de vértices em cada componente;  
+- `int num_componentes`: quantidade de componentes;
+- `int* tamanhos`: quantidade de vértices em cada componente;
 - `int** componentes`: matriz contendo a distribuição dos vértices em cada componente.
 
 Naturalmente, por `adicionarAresta()` inserir cada nova aresta de modo ordenado no encadeamento dos vértices, os vértices de cada componente conexo também estarão em ordem crescente.  
@@ -131,14 +131,13 @@ Também buscou-se resumir o máximo possível os algoritmos de cada função par
 
 Abaixo segue o resumo dos dados extraídos pelo grafo gerado por `teste2.csv` de *input*, os quais também constam no *output* de `main.c`, como mostra a Figura 11, além de todos os vértices que compõem ordenadamente cada componente:
 
-1. Número de vértices: 999  
-2. Grau máximo: 2  
-3. Grau mínimo: 1  
-4. O grafo é simples, portanto não possui laços ou arestas.  
+1. Número de vértices: 999
+2. Grau máximo: 2
+3. Grau mínimo: 1
+4. O grafo é simples, portanto não possui laços ou arestas.
 5. O grafo possui 4 componentes conexos, sendo 3 deles com 250 vértices e 1 com 249 vértices (resultando em $3 \times 250+249=999$). O primeiro e quarto componentes possuem vértices ímpares, enquanto os demais possuem vértices pares, e cada um é dividido praticamente nos extremos entre cada quarto na divisão de 1000/4.
 
 ![*Recorte do output de main.c carregando o arquivo teste2.csv*.](imagem/12.png){width=80%}
 
 Para facilitar a visualização e análise dos dados obtidos, foi produzido um histograma (Figura 12\) representando os componentes conexos identificados no grafo.   
-
 ![*Histograma da distribuição dos componentes conexos*.](imagem/13.png){width=80%}

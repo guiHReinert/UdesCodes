@@ -19,10 +19,6 @@ typedef struct Vertice{
     NoAdj* listaAdj;
 } Nodo, Vertice;
 
-/*
-    O grafo apresenta uma lista de adjacencias composta por todos os vertices
-    encadeados ordenadamente com os vertices com arestas em comum.
-*/
 typedef struct{
     Vertice* lista;
     int num_vertices;
@@ -31,22 +27,24 @@ typedef struct{
 
 Grafo* criar_grafo(int max_vertices);
 void inserir_vertice(Grafo* grafo, char* origem, char* nova);
+int encontrar_indice(Grafo* g, char* palavra);
 void adicionar_aresta(Grafo* grafo, char* origem, char* destino);
+void criar_arestas(Grafo* g);
+int diferenciar_uma_letra(char* a, char* b);
+
 void carregar_lista_adjacencias(Grafo** grafo, char* path);
+
 int grau_maximo(Grafo* grafo);
 int grau_minimo(Grafo* grafo);
-void printar_lista_adjacencias(Grafo* grafo, int max_origens, int max_destinos);
-int diferenca_uma_letra(char* a, char* b);
-void criar_arestas(Grafo* g);
-int** componentesConexos(Grafo* grafo, int* num_componentes, int* tamanhos);
+int eh_multigrafo(Grafo* grafo, int* lacos, int* repeticoes);
 void DFS_G(Grafo* grafo, int raiz, int* vet_marca, int* tamanho, int*componente);
-int ehMultigrafo(Grafo* grafo, int* lacos, int* repeticoes);
-int encontrar_indice(Grafo* g, char* palavra);
+int** componentes_conexos(Grafo* grafo, int* num_componentes, int* tamanhos);
+
 void dijkstra(Grafo* g, char* origem, char* destino);
-int vertice_maior_grau_componente(Grafo* grafo, int* componente, int tamanho);
-int vertice_menor_grau_componente(Grafo* grafo, int* componente, int tamanho);
+
+void printar_lista_adjacencias(Grafo* grafo, int max_origens, int max_destinos);
 void analisar_componentes(Grafo* grafo);
-
-
+int maior_grau_componente(Grafo* grafo, int* componente, int tamanho);
+int menor_grau_componente(Grafo* grafo, int* componente, int tamanho);
 
 #endif
