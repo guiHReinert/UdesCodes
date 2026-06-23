@@ -4,24 +4,28 @@
 /*
     Definicao
 */
-typedef enum coloracao_e { Vermelho, Preto } Cor_t;
+typedef enum coloracao { Vermelho, Preto } Cor;
 
-typedef struct rn_nodo {
-    struct rn_nodo* pai;
-    struct rn_nodo* esquerda;
-    struct rn_nodo* direita;
-    Cor_t cor;
+typedef struct NodoRN {
+    struct NodoRN* pai;
+    struct NodoRN* esquerda;
+    struct NodoRN* direita;
+    Cor cor;
     int valor;
-} rn_nodo_t;
+} NodoRN;
 
-typedef struct rn_arvore{
-    rn_nodo_t* raiz;
-    rn_nodo_t* nulo;
-} rn_arvore_t;
+typedef struct ArvoreRN {
+    NodoRN* raiz;
+    NodoRN* nulo;
+} ArvoreRN;
 
 /*
     Funcoes
 */
-
+ArvoreRN* criarRn(void);
+NodoRN*   criarNodoRN(ArvoreRN* pai, int valor, Cor cor);
+void      rotEsquerdaRN(ArvoreRN* arvore, NodoRN* nodo);
+void      rotDireitaRN(ArvoreRN* arvore, NodoRN* nodo);
+void      balancearRN(ArvoreRN* arvore, NodoRN* nodo);
 
 #endif

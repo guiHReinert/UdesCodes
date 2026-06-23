@@ -4,66 +4,134 @@
     Criacao
 */
 
+ArvoreRN* criarRN() {
+    ArvoreRN* arvore = malloc(sizeof(ArvoreRN));
+
+    arvore->raiz = NULL;
+    arvore->nulo = NULL;
+
+    return arvore;
+}
+
+NodoRN* criarNodoRN(int valor, Cor cor) {
+    NodoRN* nodo = malloc(sizeof(NodoRN));
+
+    nodo->pai = NULL;
+    nodo->esquerda = NULL;
+    nodo->direita = NULL;
+    nodo->valor = valor;
+    nodo->cor = cor;
+
+    return nodo;
+}
+
+/*
+    Operacoes
+*/
+
+
+// Busca da posicao do novo nodo
+static NodoRN* adicionarNodoRN(ArvoreRN* arvore, int valor) {
+    if (valor > atual->valor) {
+
+        // Valor maior que todos
+        if (atual->direita == NULL) {
+            NodoRN* novo = criarNodoRN(valor, Vermelho);
+            atual->direita = novo;
+        } else {
+            return adicionarNodoRN(atual->);
+        }
+    }
+}
+
+void adicionarChaveRN(ArvoreRN* arvore, int valor) {
+
+    // Arvore vazia
+    if (arvore->raiz == NULL) {
+        NodoRN* novo = criarNodoRN(NULL, valor);
+        arvore->raiz = novo;
+
+        return novo;
+    } else {
+        NodoRN* novo = adicionarNodoRN();
+        balancearRN(arvore, nodo);
+    }
+}
 
 /*
     Balanceamento
 */
 
-void rot_esquerda_rubro_negra(rn_arvore_t* arvore, rn_nodo_t* nodo) {
-    rn_nodo_t* direita = nodo->direita;
+void rotEsquerdaRN(ArvoreRN* arvore, NodoRN* nodo) {
+    NodoRN* direita = nodo->direita;
     nodo->direita = direita->esquerda;
     if (direita->esquerda != arvore->nulo)
-        direita->esquerda->pai = nodo; //Se houver filho à esquerda em direita, ele será pai do nó
+        // Se houver filho à esquerda em direita, ele será pai do nó
+        direita->esquerda->pai = nodo;
 
-    direita->pai = nodo->pai; //Ajusta nodo pai do nó à direita
+    // Ajusta nodo pai do nó à direita
+    direita->pai = nodo->pai;
 
     if (nodo->pai == arvore->nulo)
-        arvore->raiz = direita; //Se nó for raiz, o nó direita será a nodova raiz da árvore
+        // Se nó for raiz, o nó direita será a nova raiz da árvore
+        arvore->raiz = direita;
     else if (nodo == nodo->pai->esquerda)
-        nodo->pai->esquerda = direita; //Cor_trige relação pai-filho do nodovo pai (esquerda)
+        // Corrige relação pai-filho do novo pai (esquerda)
+        nodo->pai->esquerda = direita;
     else
-        nodo->pai->direita = direita; //Cor_trige relação pai-filho do nodovo pai (direita)
+        // Corrige relação pai-filho do novo pai (direita)
+        nodo->pai->direita = direita;
 
-    direita->esquerda = nodo; //Cor_trige relação pai-filho entre o nó pivô e o nó à direita
+    // Corrige relação pai-filho entre o nó pivô e o nó à direita
+    direita->esquerda = nodo;
     nodo->pai = direita;
 }
 
-void rot_direita_rubro_negra(rn_arvore_t* arvore, rn_nodo_t* nodo) {
-    rn_nodo_t* esquerda = nodo->esquerda;
+void rotDireitaRN(ArvoreRN* arvore, NodoRN* nodo) {
+    NodoRN* esquerda = nodo->esquerda;
     nodo->esquerda = esquerda->direita;
     if (esquerda->direita != arvore->nulo)
-        esquerda->direita->pai = nodo; //Se houver filho à direita em esquerda, ele será pai do nó
-    
-        esquerda->pai = nodo->pai; //Ajusta nodo pai do nó à esquerda
+        // Se houver filho à direita em esquerda, ele será pai do nó
+        esquerda->direita->pai = nodo;
+        // Ajusta nodo pai do nó à esquerda
+        esquerda->pai = nodo->pai;
     if (nodo->pai == arvore->nulo)
-        arvore->raiz = esquerda; //Se nó for raiz, o nó esquerda será a nodova raiz da árvore
+        // Se nó for raiz, o nó esquerda será a nova raiz da árvore
+        arvore->raiz = esquerda;
     else if (nodo == nodo->pai->esquerda)
-        nodo->pai->esquerda = esquerda; //Cor_trige relação pai-filho do nodovo pai (esquerda)
+        // Corrige relação pai-filho do novo pai (esquerda)
+        nodo->pai->esquerda = esquerda;
     else
-        nodo->pai->direita = esquerda; //Cor_trige relação pai-filho do nodovo pai (direita)
-    
-        esquerda->direita = nodo; //Cor_trige relação pai-filho entre o nó pivô e o nó à esquerda
+        // Corrige relação pai-filho do novo pai (direita)
+        nodo->pai->direita = esquerda;
+        // Corrige relação pai-filho entre o nó pivô e o nó à esquerda
+        esquerda->direita = nodo;
     nodo->pai = esquerda;
 }
 
-void balancear_rubro_negra(rn_arvore_t* arvore, rn_nodo_t* nodo) {
-    while (nodo->pai->cor == Vermelho) { //Garante que todos os níveis foram balanceados
+void balancearRN(ArvoreRN* arvore, NodoRN* nodo) {
+    //Garante que todos os níveis foram balanceados
+    while (nodo->pai->cor == Vermelho) {
         if (nodo->pai == nodo->pai->pai->esquerda) {
-            rn_nodo_t *tio = nodo->pai->pai->direita;
-
+            NodoRN *tio = nodo->pai->pai->direita;
             if (tio->cor == Vermelho) {
-            tio->cor = Preto; //Resolve caso 2
-            nodo->pai->cor = Preto;
-            nodo->pai->pai->cor = Vermelho;
-            nodo = nodo->pai->pai; //Vai para o nível anterior
+                // Resolve caso 2
+                tio->cor = Preto;
+                nodo->pai->cor = Preto;
+                nodo->pai->pai->cor = Vermelho;
+                // Vai para o nível anterior
+                nodo = nodo->pai->pai;
             } else {
                 if (nodo == nodo->pai->direita) {
-                nodo = nodo->pai; //Vai para o nível anterior
-                rot_esquerda_rubro_negra(arvore, nodo); //Resolve caso 3
+                    // Vai para o nível anterior
+                    nodo = nodo->pai;
+                    // Resolve caso 3
+                    rotEsquerdaRN(arvore, nodo);
                 } else {
-                nodo->pai->cor = Preto; //Resolve caso 4
-                nodo->pai->pai->cor = Vermelho;
-                rot_direita_rubro_negra(arvore, nodo->pai->pai);
+                    // Resolve caso 4
+                    nodo->pai->cor = Preto;
+                    nodo->pai->pai->cor = Vermelho;
+                    rotDireitaRN(arvore, nodo->pai->pai);
                 }
             }
         } else {
@@ -72,3 +140,5 @@ void balancear_rubro_negra(rn_arvore_t* arvore, rn_nodo_t* nodo) {
     }
     arvore->raiz->cor = Preto; //Resolve caso 1
 }
+
+

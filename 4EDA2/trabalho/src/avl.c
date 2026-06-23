@@ -3,17 +3,17 @@
 /*
     Criacao
 */
-avl_arvore_t* criar_avl() {
-    avl_arvore_t* arvore = malloc(sizeof(avl_arvore_t));
+ArvoreAVL* criarAVL() {
+    ArvoreAVL* arvore = malloc(sizeof(ArvoreAVL));
     arvore->raiz = NULL;
 
     return arvore;                
 }
 
-avl_nodo_t* criar_nodo_avl(avl_nodo_t* pai, int valor) {
+NodoAVL* criarNodoAVL(NodoAVL* pai, int valor) {
     printf("Adicionando %d\n", valor);
 
-    avl_nodo_t* nodo = malloc(sizeof(avl_nodo_t));
+    NodoAVL* nodo = malloc(sizeof(NodoAVL));
     nodo->valor    = valor;
     nodo->pai      = pai;           
     nodo->esquerda = NULL;          
@@ -26,9 +26,9 @@ avl_nodo_t* criar_nodo_avl(avl_nodo_t* pai, int valor) {
     Balanceamento
 */
 
-avl_nodo_t* rse(avl_arvore_t* arvore, avl_nodo_t* nodo) {
-    avl_nodo_t* pai    = nodo->pai;
-    avl_nodo_t* direita = nodo->direita;
+NodoAVL* rse(ArvoreAVL* arvore, NodoAVL* nodo) {
+    NodoAVL* pai    = nodo->pai;
+    NodoAVL* direita = nodo->direita;
 
     if (direita->esquerda != NULL) {
         direita->esquerda->pai = nodo;
@@ -53,9 +53,9 @@ avl_nodo_t* rse(avl_arvore_t* arvore, avl_nodo_t* nodo) {
     return direita;
 }
 
-avl_nodo_t* rsd(avl_arvore_t* arvore, avl_nodo_t* nodo) {
-    avl_nodo_t* pai     = nodo->pai;
-    avl_nodo_t* esquerda = nodo->esquerda;
+NodoAVL* rsd(ArvoreAVL* arvore, NodoAVL* nodo) {
+    NodoAVL* pai     = nodo->pai;
+    NodoAVL* esquerda = nodo->esquerda;
 
     if (esquerda->direita != NULL) {
         esquerda->direita->pai = nodo;
@@ -80,17 +80,17 @@ avl_nodo_t* rsd(avl_arvore_t* arvore, avl_nodo_t* nodo) {
     return esquerda;
 }
 
-avl_nodo_t* rde(avl_arvore_t* arvore, avl_nodo_t* nodo) {
+NodoAVL* rde(ArvoreAVL* arvore, NodoAVL* nodo) {
     nodo->direita = rsd(arvore, nodo->direita);
     return rse(arvore, nodo);
 }
 
-avl_nodo_t* rdd(avl_arvore_t* arvore, avl_nodo_t* nodo) {
+NodoAVL* rdd(ArvoreAVL* arvore, NodoAVL* nodo) {
     nodo->esquerda = rse(arvore, nodo->esquerda);
     return rsd(arvore, nodo);
 }
 
-int altura(avl_nodo_t* nodo) {
+int altura(NodoAVL* nodo) {
     int esquerda = 0, direita = 0;
     if (nodo->esquerda != NULL) {
         esquerda = altura(nodo->esquerda) + 1;
@@ -101,7 +101,7 @@ int altura(avl_nodo_t* nodo) {
     return esquerda > direita ? esquerda : direita;
 }
 
-int fb(avl_nodo_t* nodo) {
+int fb(NodoAVL* nodo) {
     int esquerda = 0, direita = 0;
     if (nodo->esquerda != NULL) {
         esquerda = altura(nodo->esquerda) + 1;
@@ -112,7 +112,7 @@ int fb(avl_nodo_t* nodo) {
     return esquerda - direita;
 }
 
-void balanceamento_avl(avl_arvore_t* arvore, avl_nodo_t* nodo) {
+void balanceamentoAVL(ArvoreAVL* arvore, NodoAVL* nodo) {
     while (nodo != NULL) {
         int fator = fb(nodo);
 
@@ -142,37 +142,37 @@ void balanceamento_avl(avl_arvore_t* arvore, avl_nodo_t* nodo) {
     Operacoes
 */
 
-avl_nodo_t* adicionar_nodo_avl(avl_nodo_t* nodo, int valor) {
+NodoAVL* adicionarNodoAVL(NodoAVL* nodo, int valor) {
     if (valor > nodo->valor) {
         if (nodo->direita == NULL) {
-            avl_nodo_t* nodonovo = criar_nodo_avl(nodo, valor);
-            nodo->direita = nodonovo;
+            NodoAVL* nodoNovo = criarNodoAVL(nodo, valor);
+            nodo->direita = nodoNovo;
 
-            return nodonovo;
+            return nodoNovo;
         } else {
-            return adicionar_nodo_avl(nodo->direita, valor);
+            return adicionarNodoAVL(nodo->direita, valor);
         }
     } else {
         if (nodo->esquerda == NULL) {
-            avl_nodo_t* nodonovo = criar_nodo_avl(nodo, valor);
-            nodo->esquerda = nodonovo;
+            NodoAVL* nodoNovo = criarNodoAVL(nodo, valor);
+            nodo->esquerda = nodoNovo;
 
-            return nodonovo;
+            return nodoNovo;
         } else {
-            return adicionar_nodo_avl(nodo->esquerda, valor);
+            return adicionarNodoAVL(nodo->esquerda, valor);
         }
     }
 }
 
-avl_nodo_t* adicionar_chave_avl(avl_arvore_t* arvore, int valor) {
+NodoAVL* adicionarChaveAVL(ArvoreAVL* arvore, int valor) {
     if (arvore->raiz == NULL) {     /* era: vazia(avl_arvore_s) */
-        avl_nodo_t* nodonovo = criar_nodo_avl(NULL, valor);
-        arvore->raiz = nodonovo;
+        NodoAVL* nodoNovo = criarNodoAVL(NULL, valor);
+        arvore->raiz = nodoNovo;
 
-        return nodonovo;
+        return nodoNovo;
     } else {
-        avl_nodo_t* nodo = adicionar_nodo_avl(arvore->raiz, valor);
-        balanceamento_avl(arvore, nodo);
+        NodoAVL* nodo = adicionarNodoAVL(arvore->raiz, valor);
+        balanceamentoAVL(arvore, nodo);
 
         return nodo;
     }
