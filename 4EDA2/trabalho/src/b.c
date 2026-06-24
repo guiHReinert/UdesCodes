@@ -4,19 +4,19 @@
     Criacao
 */
 
-BArvore* criarArvoreB(int ordem) {
-    BArvore* a = malloc(sizeof(BArvore));
+ArvoreB* criarArvoreB(int ordem) {
+    ArvoreB* a = malloc(sizeof(ArvoreB));
     a->ordem = ordem;
     a->raiz = criarNodoB(a);
     return a;
 }
 
-BNodo* criarNodoB(BArvore* arvore) {
+NodoB* criarNodoB(ArvoreB* arvore) {
     int max = arvore->ordem * 2;
-    BNodo* nodo = malloc(sizeof(BNodo));
+    NodoB* nodo = malloc(sizeof(NodoB));
     nodo->pai = NULL;
     nodo->chaves = malloc(sizeof(int) * (max + 1));
-    nodo->filhos = malloc(sizeof(BNodo) * (max + 2));
+    nodo->filhos = malloc(sizeof(NodoB) * (max + 2));
     nodo->total = 0;
     for (int i = 0; i < max + 2; i++)
     nodo->filhos[i] = NULL;
@@ -27,7 +27,7 @@ BNodo* criarNodoB(BArvore* arvore) {
     Operacoes
 */
 
-int pesquisaBinariaB(BNodo* nodo, int chave) {
+int pesquisaBinariaB(NodoB* nodo, int chave) {
     int inicio = 0, fim = nodo->total - 1, meio;
     while (inicio <= fim) {
         meio = (inicio + fim) / 2;
@@ -43,7 +43,7 @@ int pesquisaBinariaB(BNodo* nodo, int chave) {
 }
 
 // Percorre todos os nodos da arvore.
-void percorrerArvoreB(BNodo* nodo, void (visita)(int chave)) {
+void percorrerArvoreB(NodoB* nodo, void (visita)(int chave)) {
     if (nodo != NULL) {
         for (int i = 0; i < nodo->total; i++){
             percorrerArvoreB(nodo->filhos[i], visita);
@@ -54,8 +54,8 @@ void percorrerArvoreB(BNodo* nodo, void (visita)(int chave)) {
 }
 
 // Busca uma chave.
-int localizarChaveB(BArvore* arvore, int chave) {
-    BNodo *nodo = arvore->raiz;
+int localizarChaveB(ArvoreB* arvore, int chave) {
+    NodoB *nodo = arvore->raiz;
     while (nodo != NULL) {
         int i = pesquisaBinariaB(nodo, chave);
         if (i < nodo->total && nodo->chaves[i] == chave) {
@@ -68,22 +68,22 @@ int localizarChaveB(BArvore* arvore, int chave) {
 }
 
 // Busca um nodo a partir de uma chave.
-BNodo* localizarNodoB(BArvore* arvore, int chave) {
-    BNodo *nodo = arvore->raiz;
+NodoB* localizarNodoB(ArvoreB* arvore, int chave) {
+    NodoB *nodo = arvore->raiz;
     while (nodo != NULL) {
         int i = pesquisaBinariaB(nodo, chave);
-        if (nodo->filhos[i] == NULL)
-            return nodo; //encontrou nó
-        else
-            nodo = nodo->filhos[i];
+    if (nodo->filhos[i] == NULL)
+        return nodo; //encontrou nó
+    else
+        nodo = nodo->filhos[i];
     }
     return NULL; //não encontrou nenhum nó
 }
 
 // Split: divide as chaves de um nodo.
-BNodo* dividirNodoB(BArvore* arvore, BNodo* nodo) {
+NodoB* dividirNodoB(ArvoreB* arvore, NodoB* nodo) {
     int meio = nodo->total / 2;
-    BNodo* novo = criarNodoB(arvore);
+    NodoB* novo = criarNodoB(arvore);
     novo->pai = nodo->pai;
     for (int i = meio + 1; i < nodo->total; i++) {
         novo->filhos[novo->total] = nodo->filhos[i];
@@ -98,12 +98,12 @@ BNodo* dividirNodoB(BArvore* arvore, BNodo* nodo) {
 }
 
 // Verifica overflow em um nodo
-int transbordoB(BArvore *arvore, BNodo *nodo) {
+int transbordoB(ArvoreB *arvore, NodoB *nodo) {
     return nodo->total > arvore->ordem * 2;
 }
 
 // Adiciona uma chave em um nodo.
-void adicionarChaveNodoB(BNodo* nodo, BNodo* direita, int chave) {
+void adicionarChaveNodoB(NodoB* nodo, NodoB* direita, int chave) {
     int i = pesquisaBinariaB(nodo, chave);
     for (int j = nodo->total - 1; j >= i; j--) {
         nodo->chaves[j + 1] = nodo->chaves[j];
@@ -115,17 +115,17 @@ void adicionarChaveNodoB(BNodo* nodo, BNodo* direita, int chave) {
 }
 
 // Adicionar uma chave.
-void adicionarChaveB(BArvore* arvore, int chave) {
-    BNodo* nodo = localizarNodoB(arvore, chave);
+void adicionarChaveB(ArvoreB* arvore, int chave) {
+    NodoB* nodo = localizarNodoB(arvore, chave);
     adicionarChaveRecursivoB(arvore, nodo, NULL, chave);
 }
-void adicionarChaveRecursivoB(BArvore* arvore, BNodo* nodo, BNodo* novo, int chave) {
+void adicionarChaveRecursivoB(ArvoreB* arvore, NodoB* nodo, NodoB* novo, int chave) {
 adicionarChaveNodoB(nodo, novo, chave);
 if (transbordoB(arvore, nodo)) {
     int promovido = nodo->chaves[arvore->ordem];
-    BNodo* novo = dividirNodoB(arvore, nodo);
+    NodoB* novo = dividirNodoB(arvore, nodo);
     if (nodo->pai == NULL) {
-        BNodo* raiz = criarNodoB(arvore);
+        NodoB* raiz = criarNodoB(arvore);
         raiz->filhos[0] = nodo;
         adicionarChaveNodoB(raiz, novo, promovido);
         nodo->pai = raiz;

@@ -4,31 +4,42 @@
 /*
     Definicao
 */
-typedef struct NodoAVL {
-    struct NodoAVL* pai;
-    struct NodoAVL* esquerda;
-    struct NodoAVL* direita;
+typedef struct no {
+    struct no* pai;
+    struct no* esquerda;
+    struct no* direita;
     int valor;
     int altura;
-} NodoAVL;
+} NoAVL;
 
-typedef struct AVLArvore {
-    NodoAVL* raiz;
+typedef struct arvore {
+    struct no* raiz;
 } ArvoreAVL;
 
 /*
     Funcoes
 */
+
 ArvoreAVL* criarAVL(void);
-NodoAVL*   criarNodoAVL(NodoAVL* pai, int valor);
-NodoAVL*   rse(ArvoreAVL* arvore, NodoAVL* nodo);
-NodoAVL*   rsd(ArvoreAVL* arvore, NodoAVL* nodo);
-NodoAVL*   rde(ArvoreAVL* arvore, NodoAVL* nodo);
-NodoAVL*   rdd(ArvoreAVL* arvore, NodoAVL* nodo);
-int        altura(NodoAVL* nodo);
-int        fb(NodoAVL* nodo);
-void       balanceamentoAVL(ArvoreAVL* arvore, NodoAVL* nodo);
-NodoAVL*   adicionarNodoAVL(NodoAVL* nodo, int valor);
-NodoAVL*   adicionarChaveAVL(ArvoreAVL* arvore, int valor);
+static NoAVL* criarNoAVL(NoAVL* pai, int valor);
+
+int isVaziaAVL(ArvoreAVL* arvore);
+NoAVL* adicionarChaveAVL(ArvoreAVL* arvore, int valor);
+NoAVL* localizarNoAVL(NoAVL* no, int valor);
+NoAVL* remocaoAVL(ArvoreAVL* arvore, int valor);
+void percorrerAVL(NoAVL* no, void (*callback)(int));
+void visitar(int valor);
+
+NoAVL* adicionarNoAVL(NoAVL* no, int valor);
+static NoAVL* encontrarSucessor(NoAVL* no);
+static void balanceamentoAVL(ArvoreAVL* arvore, NoAVL* no);
+static int altura(NoAVL* no);
+static int fb(NoAVL* no);
+static NoAVL* rsd(ArvoreAVL* arvore, NoAVL* no);
+static NoAVL* rse(ArvoreAVL* arvore, NoAVL* no);
+static NoAVL* rdd(ArvoreAVL* arvore, NoAVL* no);
+static NoAVL* rde(ArvoreAVL* arvore, NoAVL* no);
+
+void printarAVL(ArvoreAVL* arvore);
 
 #endif

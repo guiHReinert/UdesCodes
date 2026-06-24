@@ -1,49 +1,184 @@
 #include "../include/arvores.h"
 
+
 /*
     Criacao
 */
-ArvoreAVL* criarAVL() {
-    ArvoreAVL* arvore = malloc(sizeof(ArvoreAVL));
-    arvore->raiz = NULL;
 
-    return arvore;                
+ArvoreAVL* criarAVL() {
+    ArvoreAVL *arvore = malloc(sizeof(ArvoreAVL));
+    arvore->raiz = NULL;
+  
+    return arvore;
 }
 
-NodoAVL* criarNodoAVL(NodoAVL* pai, int valor) {
-    printf("Adicionando %d\n", valor);
+NoAVL* criarNoAVL(NoAVL* pai, int valor) {
+    NoAVL* no = malloc(sizeof(NoAVL));
+    no->valor = valor;
+    no->pai = pai;
+    no->esquerda = NULL;
+    no->direita = NULL;
 
-    NodoAVL* nodo = malloc(sizeof(NodoAVL));
-    nodo->valor    = valor;
-    nodo->pai      = pai;           
-    nodo->esquerda = NULL;          
-    nodo->direita  = NULL;         
+    return no;
+}
 
-    return nodo;                    
+/*
+    Operacoes
+*/
+
+int isVaziaAVL(ArvoreAVL* arvore) {
+    return arvore->raiz == NULL;
+}
+
+NoAVL* adicionarNoAVL(NoAVL* no, int valor) {
+    if (valor > no->valor) {
+        if (no->direita == NULL) {
+            NoAVL* novo = criarNoAVL(no, valor);
+            no->direita = novo;
+				
+            return novo;
+        } else {
+            return adicionarNoAVL(no->direita, valor);
+        }
+    } else {
+        if (no->esquerda == NULL) {
+            NoAVL* novo = criarNoAVL(no, valor);
+            no->esquerda = novo;
+			
+            return novo;
+        } else {
+            return adicionarNoAVL(no->esquerda, valor);
+        }
+    }
+}
+
+NoAVL* adicionarChaveAVL(ArvoreAVL* arvore, int valor) {
+    if (isVaziaAVL(arvore)) {
+        NoAVL* novo = criarNoAVL(NULL, valor);
+        arvore->raiz = novo;
+			
+        return novo;
+    } else {
+        NoAVL* no = adicionarNoAVL(arvore->raiz, valor);
+        balanceamentoAVL(arvore, no);
+        
+        return no;
+    }
+}
+
+NoAVL* localizarNoAVL(NoAVL* no, int valor) {
+    if (no->valor == valor) {
+        return no;
+    } else {
+        if (valor < no->valor) {
+            if (no->esquerda != NULL) {
+                return localizarNoAVL(no->esquerda, valor);
+            }
+        } else {
+            if (no->direita != NULL) {
+                return localizarNoAVL(no->direita, valor);
+            }
+        }
+    }
+
+    return NULL;
+}
+
+void percorrerAVL(NoAVL* no, void (*callback)(int)) {
+    if (no != NULL) {
+        percorrerAVL(no->esquerda,callback);
+        callback(no->valor);
+        percorrerAVL(no->direita,callback);
+    }
+}
+
+void visitar(int valor){
+    printf("%d ", valor);
 }
 
 /*
     Balanceamento
 */
 
-NodoAVL* rse(ArvoreAVL* arvore, NodoAVL* nodo) {
-    NodoAVL* pai    = nodo->pai;
-    NodoAVL* direita = nodo->direita;
+void balanceamentoAVL(ArvoreAVL* arvore, NoAVL* no) {
+    while (no != NULL) {
+        int fator = fb(no);
 
-    if (direita->esquerda != NULL) {
-        direita->esquerda->pai = nodo;
+        if (fator > 1) { //árvore mais profunda a esquerda
+            //rotação para a direita
+            if (fb(no->esquerda) > 0) {
+                printf("RSD(%d)\n",no->valor);
+                //rotação simples a direita, FB do filho tem sinal igual
+                rsd(arvore, no); 
+            } else {
+                printf("RDD(%d)\n",no->valor);
+                //rotação dupla a direita, FB do filho tem sinal diferente
+                rdd(arvore, no); 
+            }
+        } else if (fator < -1) { //árvore mais profunda a direita
+            //rotação para a esquerda
+            if (fb(no->direita) < 0) {
+                printf("RSE(%d)\n",no->valor);
+                //rotação simples a esquerda, FB do filho tem sinal igual
+                rse(arvore, no); 
+            } else {
+                printf("RDE(%d)\n",no->valor);
+                //rotação dupla a esquerda, FB do filho tem sinal diferente
+                rde(arvore, no);
+            }
+        }
+
+        no = no->pai; 
+    }
+}
+
+int altura(NoAVL* no){
+    int esquerda = 0,direita = 0;
+
+    if (no->esquerda != NULL) {
+        esquerda = altura(no->esquerda) + 1;
     }
 
-    nodo->direita = direita->esquerda;
-    nodo->pai     = direita;
+    if (no->direita != NULL) {
+        direita = altura(no->direita) + 1;
+    }
+  
+    //max(esquerda,direita)
+    return esquerda > direita ? esquerda : direita;
+}
 
-    direita->esquerda = nodo;
-    direita->pai      = pai;
+int fb(NoAVL* no) {
+    int esquerda = 0,direita = 0;
+  
+    if (no->esquerda != NULL) {
+        esquerda = altura(no->esquerda) + 1;
+    }
+
+    if (no->direita != NULL) {
+        direita = altura(no->direita) + 1;
+    }
+  
+    return esquerda - direita;
+}
+
+NoAVL* rse(ArvoreAVL* arvore, NoAVL* no) {
+    NoAVL* pai = no->pai;
+    NoAVL* direita = no->direita;
+
+    if (direita->esquerda != NULL) {
+        direita->esquerda->pai = no;
+    } 
+  
+    no->direita = direita->esquerda;
+    no->pai = direita;
+
+    direita->esquerda = no;
+    direita->pai = pai;
 
     if (pai == NULL) {
         arvore->raiz = direita;
     } else {
-        if (pai->esquerda == nodo) {
+        if (pai->esquerda == no) {
             pai->esquerda = direita;
         } else {
             pai->direita = direita;
@@ -53,24 +188,26 @@ NodoAVL* rse(ArvoreAVL* arvore, NodoAVL* nodo) {
     return direita;
 }
 
-NodoAVL* rsd(ArvoreAVL* arvore, NodoAVL* nodo) {
-    NodoAVL* pai     = nodo->pai;
-    NodoAVL* esquerda = nodo->esquerda;
+
+
+NoAVL* rsd(ArvoreAVL* arvore, NoAVL* no) {
+    NoAVL* pai = no->pai;
+    NoAVL* esquerda = no->esquerda;
 
     if (esquerda->direita != NULL) {
-        esquerda->direita->pai = nodo;
-    }
-
-    nodo->esquerda = esquerda->direita;
-    nodo->pai      = esquerda;
-
-    esquerda->direita = nodo;
-    esquerda->pai     = pai;
+        esquerda->direita->pai = no;
+    } 
+  
+    no->esquerda = esquerda->direita;
+    no->pai = esquerda;
+  
+    esquerda->direita = no;
+    esquerda->pai = pai;
 
     if (pai == NULL) {
         arvore->raiz = esquerda;
     } else {
-        if (pai->esquerda == nodo) {
+        if (pai->esquerda == no) {
             pai->esquerda = esquerda;
         } else {
             pai->direita = esquerda;
@@ -80,102 +217,190 @@ NodoAVL* rsd(ArvoreAVL* arvore, NodoAVL* nodo) {
     return esquerda;
 }
 
-NodoAVL* rde(ArvoreAVL* arvore, NodoAVL* nodo) {
-    nodo->direita = rsd(arvore, nodo->direita);
-    return rse(arvore, nodo);
+NoAVL* rde(ArvoreAVL* arvore, NoAVL* no) {
+    no->direita = rsd(arvore, no->direita);
+    return rse(arvore, no);
 }
 
-NodoAVL* rdd(ArvoreAVL* arvore, NodoAVL* nodo) {
-    nodo->esquerda = rse(arvore, nodo->esquerda);
-    return rsd(arvore, nodo);
+NoAVL* rdd(ArvoreAVL* arvore, NoAVL* no) {
+    no->esquerda = rse(arvore, no->esquerda);
+    return rsd(arvore, no);
 }
 
-int altura(NodoAVL* nodo) {
-    int esquerda = 0, direita = 0;
-    if (nodo->esquerda != NULL) {
-        esquerda = altura(nodo->esquerda) + 1;
+/*Função que auxilia a encontrar o menor da subárvore a direita*/
+NoAVL* encontrarSucessor(NoAVL* no) {
+
+    while(no->esquerda != NULL){
+
+        no = no->esquerda;
+
     }
-    if (nodo->direita != NULL) {
-        direita = altura(nodo->direita) + 1;
-    }
-    return esquerda > direita ? esquerda : direita;
+
+    return no;
+
 }
 
-int fb(NodoAVL* nodo) {
-    int esquerda = 0, direita = 0;
-    if (nodo->esquerda != NULL) {
-        esquerda = altura(nodo->esquerda) + 1;
+NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor) {
+
+    if (arvore->raiz == NULL) {
+
+        printf("Não há valores a serem removidos...");
+        return NULL;
+
     }
-    if (nodo->direita != NULL) {
-        direita = altura(nodo->direita) + 1;
-    }
-    return esquerda - direita;
-}
 
-void balanceamentoAVL(ArvoreAVL* arvore, NodoAVL* nodo) {
-    while (nodo != NULL) {
-        int fator = fb(nodo);
+    NoAVL* no = localizarNoAVL(arvore->raiz, valor);
+    NoAVL* partidaBalanceamento = NULL;
 
-        if (fator > 1) {
-            if (fb(nodo->esquerda) > 0) {
-                printf("RSD(%d)\n", nodo->valor);
-                rsd(arvore, nodo);
-            } else {
-                printf("RDD(%d)\n", nodo->valor);
-                rdd(arvore, nodo);
-            }
-        } else if (fator < -1) {
-            if (fb(nodo->direita) < 0) {
-                printf("RSE(%d)\n", nodo->valor);
-                rse(arvore, nodo);
-            } else {
-                printf("RDE(%d)\n", nodo->valor);
-                rde(arvore, nodo);
-            }
-        }
+    if (no==NULL) {
 
-        nodo = nodo->pai;
-    }
-}
+        printf ("Não há esse valor na árvore, impossível remover");
+        return NULL;
 
-/*
-    Operacoes
-*/
-
-NodoAVL* adicionarNodoAVL(NodoAVL* nodo, int valor) {
-    if (valor > nodo->valor) {
-        if (nodo->direita == NULL) {
-            NodoAVL* nodoNovo = criarNodoAVL(nodo, valor);
-            nodo->direita = nodoNovo;
-
-            return nodoNovo;
-        } else {
-            return adicionarNodoAVL(nodo->direita, valor);
-        }
     } else {
-        if (nodo->esquerda == NULL) {
-            NodoAVL* nodoNovo = criarNodoAVL(nodo, valor);
-            nodo->esquerda = nodoNovo;
 
-            return nodoNovo;
+        if (no->esquerda==NULL && no->direita==NULL) {
+
+            printf("CASO FOLHA\n");
+            if(no->pai==NULL){
+                arvore->raiz=NULL;
+                partidaBalanceamento = no->pai;
+                free(no);
+                balanceamentoAVL(arvore, partidaBalanceamento);
+                printf("Não havia mais nós, árvore apagada");
+                return NULL;
+            }
+
+            if(no->pai->esquerda==no){
+                no->pai->esquerda=NULL;
+                partidaBalanceamento = no->pai;
+                free(no);
+                balanceamentoAVL(arvore, partidaBalanceamento);
+                printf ("Filho era uma folha a esquerda, foi removido");
+                return NULL;
+            }
+
+            if(no->pai->direita==no){
+                no->pai->direita=NULL;
+                partidaBalanceamento = no->pai;
+                free(no);
+                balanceamentoAVL(arvore, partidaBalanceamento);
+                printf ("Filho era uma folha a direita, foi removido");
+                return NULL;
+            }
+
+        } else if((no->esquerda != NULL && no->direita == NULL) || (no->direita != NULL && no->esquerda == NULL)) {
+
+            printf("CASO 1 FILHO\n");
+            NoAVL *filho = NULL;
+
+            if (no->esquerda != NULL) {
+                filho=no->esquerda;
+            } else {
+                filho=no->direita;
+            }
+
+            if (no->pai == NULL) {
+
+                arvore->raiz=filho;
+                filho->pai=NULL;
+                partidaBalanceamento = no->pai;
+                free(no);
+                balanceamentoAVL(arvore, partidaBalanceamento);
+                printf ("Remocao realizada: Filho estava conectado diretamente com a raiz...\n");
+                return NULL;
+
+            } else if (no->pai->esquerda == no) {
+
+                no->pai->esquerda=filho;
+                filho->pai=no->pai;
+                partidaBalanceamento = no->pai;
+                free(no);
+                balanceamentoAVL(arvore, partidaBalanceamento);
+                printf("Remocao realizada: no com um filho removido (substituicao pela esquerda).\n");
+                return NULL;
+
+            } else {
+                
+                no->pai->direita=filho;
+                filho->pai=no->pai;
+                partidaBalanceamento = no->pai;
+                free(no);
+                balanceamentoAVL(arvore, partidaBalanceamento);
+                printf("Remocao realizada: no com um filho removido (substituicao pela direita).\n");
+                return NULL;
+
+            }
+
         } else {
-            return adicionarNodoAVL(nodo->esquerda, valor);
-        }
+
+            printf("CASO 2 FILHOS\n");
+            NoAVL* sucessor = encontrarSucessor(no->direita);
+
+            no->valor=sucessor->valor;
+
+            if (sucessor->direita == NULL) {
+
+                if(sucessor->pai->esquerda==sucessor) {
+
+                    sucessor->pai->esquerda=NULL;
+                    partidaBalanceamento = sucessor->pai;
+                    free(sucessor);
+                    balanceamentoAVL(arvore, partidaBalanceamento);
+                    return NULL;
+
+                } else if (sucessor->pai->direita==sucessor) {
+                    
+                    sucessor->pai->direita=NULL;
+                    partidaBalanceamento = sucessor->pai;
+                    free(sucessor);
+                    balanceamentoAVL(arvore, partidaBalanceamento);
+                    return NULL;
+
+                }
+
+            } else {
+
+                NoAVL *filho = sucessor->direita;
+
+                if(sucessor->pai->esquerda==sucessor) {
+
+                    sucessor->pai->esquerda=filho;
+                    filho->pai=sucessor->pai;
+                    partidaBalanceamento = sucessor->pai;
+                    free(sucessor);
+                    balanceamentoAVL(arvore, partidaBalanceamento);
+                    return NULL;
+
+                } else if (sucessor->pai->direita==sucessor) {
+                    
+                    sucessor->pai->direita=filho;
+                    filho->pai=sucessor->pai;
+                    partidaBalanceamento = sucessor->pai;
+                    free(sucessor);
+                    balanceamentoAVL(arvore, partidaBalanceamento);
+                    return NULL;
+
+                }
+
+            }
+
+        }       
+        
     }
+
 }
 
-NodoAVL* adicionarChaveAVL(ArvoreAVL* arvore, int valor) {
-    if (arvore->raiz == NULL) {     /* era: vazia(avl_arvore_s) */
-        NodoAVL* nodoNovo = criarNodoAVL(NULL, valor);
-        arvore->raiz = nodoNovo;
-
-        return nodoNovo;
-    } else {
-        NodoAVL* nodo = adicionarNodoAVL(arvore->raiz, valor);
-        balanceamentoAVL(arvore, nodo);
-
-        return nodo;
+static void printarNoAVL(ArvoreAVL* arvore, NoAVL* no, int profundidade) {
+    if (!no) {return;}
+    printarNoAVL(arvore, no->direita, profundidade + 1);
+    for (int i = 0; i < profundidade; i++) {
+        printf("\t");
     }
+    printf("%s %d\n", no == arvore->raiz ? "[R]" : "", no->valor);
+    printarNoAVL(arvore, no->esquerda, profundidade + 1);
 }
 
-// REMOVER
+void printarAVL(ArvoreAVL* arvore) {
+    printarNoAVL(arvore, arvore->raiz, 0);
+}

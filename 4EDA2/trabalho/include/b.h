@@ -4,31 +4,31 @@
 /*
     Definicao
 */
-typedef struct bNodo {
+typedef struct NodoB {
     int total;
     int* chaves;
-    struct bNodo** filhos;
-    struct bNodo* pai;
-} BNodo;
+    struct NodoB** filhos;  
+    struct NodoB* pai;
+} NodoB;
 
-typedef struct bArvore {
-    BNodo* raiz;
+typedef struct ArvoreB {
+    NodoB* raiz;
     int ordem;
-} BArvore;
+} ArvoreB;
 
 /*
     Funcoes
 */
-BArvore* criarArvoreB(int ordem);
-BNodo*   criarNodoB(BArvore* arvore);
-int      pesquisaBinariaB(BNodo* nodo, int chave);
-void     percorrerArvoreB(BNodo* nodo, void (visita)(int chave));
-int      localizarChaveB(BArvore* arvore, int chave);
-BNodo*   localizarNodoB(BArvore* arvore, int chave);
-BNodo*   dividirNodoB(BArvore* arvore, BNodo* nodo);
-int      transbordoB(BArvore* arvore, BNodo* nodo);
-void     adicionarChaveNodoB(BNodo* nodo, BNodo* direita, int chave);
-void     adicionarChaveB(BArvore* arvore, int chave);
-void     adicionarChaveRecursivoB(BArvore* arvore, BNodo* nodo, BNodo* novo, int chave);
+ArvoreB* criarArvoreB(int ordem);
+NodoB*   criarNodoB(ArvoreB* arvore);
+int      pesquisaBinariaB(NodoB* nodo, int chave);
+void     percorrerArvoreB(NodoB* nodo, void (visita)(int chave));
+int      localizarChaveB(ArvoreB* arvore, int chave);
+NodoB*   localizarNodoB(ArvoreB* arvore, int chave);
+NodoB*   dividirNodoB(ArvoreB* arvore, NodoB* nodo);
+int      transbordoB(ArvoreB* arvore, NodoB* nodo);
+void     adicionarChaveNodoB(NodoB* nodo, NodoB* direita, int chave);
+void     adicionarChaveB(ArvoreB* arvore, int chave);
+void     adicionarChaveRecursivoB(ArvoreB* arvore, NodoB* nodo, NodoB* novo, int chave);
 
 #endif

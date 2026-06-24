@@ -22,10 +22,11 @@ typedef struct ArvoreRN {
 /*
     Funcoes
 */
-ArvoreRN* criarRn(void);
-NodoRN*   criarNodoRN(ArvoreRN* pai, int valor, Cor cor);
-void      rotEsquerdaRN(ArvoreRN* arvore, NodoRN* nodo);
-void      rotDireitaRN(ArvoreRN* arvore, NodoRN* nodo);
-void      balancearRN(ArvoreRN* arvore, NodoRN* nodo);
+ArvoreRN* criarRN(void);
+NodoRN* criarNodoRN(ArvoreRN* arvore, NodoRN* pai, int valor, Cor cor);
+void adicionarChaveRN(ArvoreRN* arvore, int valor);
+void removerChaveRN(ArvoreRN* arvore, int chave);
+void balancearRN(ArvoreRN* arvore, NodoRN* nodo);
+void printarRN(ArvoreRN* arvore);
 
 #endif
