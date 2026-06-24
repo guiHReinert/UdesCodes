@@ -84,12 +84,7 @@ void adicionarChaveRN(ArvoreRN* arvore, int chave) {
     }
 }
 
-// Fonte:
-// https://www.geeksforgeeks.org/dsa/deletion-in-red-black-tree/
-
 void removerChaveRN(ArvoreRN* arvore, int chave) {
-
-    // Arvore vazia
     if (arvore->raiz == arvore->nulo) {return;}
 
     NodoRN* nodo = localizarNodoRN(arvore, arvore->raiz, chave);
@@ -97,44 +92,46 @@ void removerChaveRN(ArvoreRN* arvore, int chave) {
         printf("\t\t\t\t\tNodo %d nao encontrado.\n", chave);
         return;
     }
-    printf("REMOVER NODO %d: (%d) (%d)\n\n", chave,
+    printf("REMOVER NODO %d: (%d) (%d)", chave,
         nodo->esquerda->valor, nodo->direita->valor);
 
     NodoRN* pai = nodo->pai;
-    
+
     // Nodo sem filhos
     if (nodo->esquerda == arvore->nulo && nodo->direita == arvore->nulo) {
-        printf("\tSEM FILHOS\n");
-        // Arvore unitaria
+        printf("\t\tSEM FILHOS\n\n");
         if (pai == arvore->nulo) {
             arvore->raiz = arvore->nulo;
-        }
-        // Eh uma folha ah esquerda
-        else if (nodo == pai->esquerda) {
+        } else if (nodo == pai->esquerda) {
             pai->esquerda = arvore->nulo;
         } else {
             pai->direita = arvore->nulo;
         }
-
-        free(nodo);
-        balancearRN(arvore, pai);
-        return;
         
-    // Nodo com 1 filho (XOR)
+        Cor corRemovido = nodo->cor;
+        
+        free(nodo);
+        if (corRemovido == Preto) {
+            fixBB(arvore, arvore->nulo, pai);
+        }
+        return;
+
+    // Nodo com 1 filho
     } else if (
         (nodo->esquerda != arvore->nulo || nodo->direita != arvore->nulo) &&
         !(nodo->esquerda != arvore->nulo && nodo->direita != arvore->nulo)
     ) {
-        printf("\tUM FILHO\n");
-        NodoRN* filho = (nodo->esquerda != arvore->nulo ?
-            nodo->esquerda : nodo->direita);
+        printf("\t\tUM FILHO\n");
 
-        // nodo eh a raiz
+        NodoRN* filho = (nodo->esquerda != arvore->nulo ? nodo->esquerda : nodo->direita);
+        Cor corRemovido = nodo->cor;
+
         if (pai == arvore->nulo) {
             arvore->raiz = filho;
             filho->pai = arvore->nulo;
-
-        // nodo eh o filho da esquerda de pai, logo serah ocupado por filho
+            filho->cor = Preto;  // raiz sempre preta
+            free(nodo);
+            return;
         } else if (nodo == pai->esquerda) {
             pai->esquerda = filho;
             filho->pai = pai;
@@ -144,23 +141,26 @@ void removerChaveRN(ArvoreRN* arvore, int chave) {
         }
 
         free(nodo);
-        balancearRN(arvore, pai);
+
+        // Corrige apenas os casos de duplo-preto
+        if (corRemovido == Preto) {
+            fixBB(arvore, filho, pai);
+        }
         return;
-    
+
     // Nodo com 2 filhos
     } else {
-        printf("\tFUDEU\n");
-
-        // Encontra o sucessor (menor da subarvore direita)
+        printf("\t\tDOIS FILHOS\n");
+                
+        // Substitui pelo sucessor in-order (minimo da subarvore direita)
         NodoRN* sucessor = nodo->direita;
         while (sucessor->esquerda != arvore->nulo) {
             sucessor = sucessor->esquerda;
         }
 
-        // Salva a cor original do sucessor para saber se precisara balancear
         Cor corOriginal = sucessor->cor;
 
-        // Filho direito do sucessor (unico filho possivel, pois esquerda e nulo)
+        // Sucessor e minimo, logo nao tem filho esquerdo
         NodoRN* filhoSucessor = sucessor->direita;
 
         if (sucessor->pai != nodo) {
@@ -174,7 +174,6 @@ void removerChaveRN(ArvoreRN* arvore, int chave) {
             filhoSucessor->pai = sucessor;
         }
 
-        // Coloca o sucessor no lugar do nodo em ambos os casos
         if (nodo->pai == arvore->nulo) {
             arvore->raiz = sucessor;
         } else if (nodo->pai->esquerda == nodo) {
@@ -186,17 +185,87 @@ void removerChaveRN(ArvoreRN* arvore, int chave) {
         sucessor->pai           = nodo->pai;
         sucessor->esquerda      = nodo->esquerda;
         sucessor->esquerda->pai = sucessor;
-        sucessor->cor           = nodo->cor;
+        sucessor->cor           = nodo->cor;  // herda a cor do nodo removido
 
         free(nodo);
 
+        // So rebalanceia se o sucessor era preto — sua remocao pode
+        // ter reduzido a altura preta em algum caminho
         if (corOriginal == Preto) {
-            balancearRN(arvore, filhoSucessor);
+            fixBB(arvore, filhoSucessor, filhoSucessor->pai);
         }
         return;
     }
 }
+static void fixBB(ArvoreRN* arvore, NodoRN* nodo, NodoRN* pai) {
+    while (nodo != arvore->raiz && nodo->cor == Preto) {
+        if (nodo == pai->esquerda) {
+            NodoRN* irmao = pai->direita;
 
+            // Caso 1 — irmao vermelho: rotaciona para expor irmao preto
+            if (irmao->cor == Vermelho) {
+                irmao->cor = Preto;
+                pai->cor = Vermelho;
+                rotEsquerdaRN(arvore, pai);
+                irmao = pai->direita;
+            }
+
+            // Caso 2 — irmao preto com filhos pretos: propaga deficit para cima
+            if (irmao->esquerda->cor == Preto && irmao->direita->cor == Preto) {
+                irmao->cor = Vermelho;
+                nodo = pai;
+                pai = nodo->pai;
+            } else {
+                // Caso 3 — filho direito do irmao e preto: rotaciona para alinhar
+                if (irmao->direita->cor == Preto) {
+                    irmao->esquerda->cor = Preto;
+                    irmao->cor = Vermelho;
+                    rotDireitaRN(arvore, irmao);
+                    irmao = pai->direita;
+                }
+                // Caso 4 — filho direito do irmao e vermelho: recolore e rotaciona
+                irmao->cor = pai->cor;
+                pai->cor = Preto;
+                irmao->direita->cor = Preto;
+                rotEsquerdaRN(arvore, pai);
+                nodo = arvore->raiz;
+            }
+        } else {
+            // Espelho: nodo e filho direito do pai
+            NodoRN* irmao = pai->esquerda;
+
+            // Caso 1 espelhado
+            if (irmao->cor == Vermelho) {
+                irmao->cor = Preto;
+                pai->cor = Vermelho;
+                rotDireitaRN(arvore, pai);
+                irmao = pai->esquerda;
+            }
+
+            // Caso 2 espelhado
+            if (irmao->direita->cor == Preto && irmao->esquerda->cor == Preto) {
+                irmao->cor = Vermelho;
+                nodo = pai;
+                pai = nodo->pai;
+            } else {
+                // Caso 3 espelhado
+                if (irmao->esquerda->cor == Preto) {
+                    irmao->direita->cor = Preto;
+                    irmao->cor = Vermelho;
+                    rotEsquerdaRN(arvore, irmao);
+                    irmao = pai->esquerda;
+                }
+                // Caso 4 espelhado
+                irmao->cor = pai->cor;
+                pai->cor = Preto;
+                irmao->esquerda->cor = Preto;
+                rotDireitaRN(arvore, pai);
+                nodo = arvore->raiz;
+            }
+        }
+    }
+    nodo->cor = Preto; // resolve duplo-preto ou garante raiz preta
+}
 /*
     Balanceamento
 */
@@ -318,10 +387,6 @@ void balancearRN(ArvoreRN* arvore, NodoRN* nodo) {
 
     // Caso 1 — garante que a raiz e sempre preta
     arvore->raiz->cor = Preto;
-}
-
-static void fixBB(ArvoreRN* arvore, NodoRN* nodo) {
-    printf("SERAH FIXADO\n");
 }
 
 static void printarNodoRN(ArvoreRN* arvore, NodoRN* nodo, int profundidade) {

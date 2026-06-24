@@ -9,17 +9,18 @@ void main(){
         RUBRO-NEGRA
     */
 
-    for (int i=-tamRN/2; i < tamRN/2+1; i++) {
+    for (int i=0; i < tamRN/2+1; i++) {
+        adicionarChaveRN(rn, -i);
         adicionarChaveRN(rn, i);
     }
     printarRN(rn); printf("\n");
     
     printf("\t\t Removendo Arvore Rubro-Negra\n\n");
     for (int i=0; i < tamRN/2+1; i++) {
-        removerChaveRN(rn, i);
+        removerChaveRN(rn, -i);
         printarRN(rn);
         for (int i=0; i < 50; i++) {printf("-");} printf("\n");
-        removerChaveRN(rn, -i);
+        removerChaveRN(rn, i);
         printarRN(rn);
         for (int i=0; i < 50; i++) {printf("-");} printf("\n");
     }
