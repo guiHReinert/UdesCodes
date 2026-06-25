@@ -36,17 +36,18 @@ NodoRN* criarNodoRN(ArvoreRN* arvore, NodoRN* pai, int chave, Cor cor) {
     Operacoes
 */
 
-NodoRN* localizarNodoRN(ArvoreRN* arvore, NodoRN* nodo, int chave) {
+NodoRN* localizarNodoRN(ArvoreRN* arvore, NodoRN* nodo, int chave, int* count) {
+    (*count)++;
     if (nodo->valor == chave) {
         return nodo;
     } else {
         if (chave < nodo->valor) {
             if (nodo->esquerda != arvore->nulo) {
-                return localizarNodoRN(arvore, nodo->esquerda, chave);
+                return localizarNodoRN(arvore, nodo->esquerda, chave, count);
             }
         } else {
             if (nodo->direita != arvore->nulo) {
-                return localizarNodoRN(arvore, nodo->direita, chave);
+                return localizarNodoRN(arvore, nodo->direita, chave, count);
             }
         }
     }
@@ -78,29 +79,31 @@ static NodoRN* adicionarNodoRN(ArvoreRN* arvore, NodoRN* nodo, int chave, int* c
 
 void adicionarChaveRN(ArvoreRN* arvore, int chave, int* count) {
     if (arvore->raiz == arvore->nulo) {
+        (*count)++;
         arvore->raiz = criarNodoRN(arvore, arvore->nulo, chave, Preto);
     } else {
         NodoRN* nodo = adicionarNodoRN(arvore, arvore->raiz, chave, count);
-        balancearRN(arvore, nodo);
+        balancearRN(arvore, nodo, count);
     }
 }
 
-void removerChaveRN(ArvoreRN* arvore, int chave) {
+void removerChaveRN(ArvoreRN* arvore, int chave, int* count) {
     if (arvore->raiz == arvore->nulo) {return;}
 
-    NodoRN* nodo = localizarNodoRN(arvore, arvore->raiz, chave);
+    NodoRN* nodo = localizarNodoRN(arvore, arvore->raiz, chave, count);
     if (nodo == arvore->nulo) {
-        printf("\t\t\t\t\tNodo %d nao encontrado.\n", chave);
+        // printf("\t\t\t\t\tNodo %d nao encontrado.\n", chave);
         return;
     }
-    printf("REMOVER NODO %d: (%d) (%d)", chave,
-        nodo->esquerda->valor, nodo->direita->valor);
+    // printf("REMOVER NODO %d: (%d) (%d)", chave,
+        // nodo->esquerda->valor, nodo->direita->valor);
 
     NodoRN* pai = nodo->pai;
+    (*count)++;
 
     // Nodo sem filhos
     if (nodo->esquerda == arvore->nulo && nodo->direita == arvore->nulo) {
-        printf("\t\tSEM FILHOS\n\n");
+        // printf("\t\tSEM FILHOS\n\n");
         if (pai == arvore->nulo) {
             arvore->raiz = arvore->nulo;
         } else if (nodo == pai->esquerda) {
@@ -113,16 +116,15 @@ void removerChaveRN(ArvoreRN* arvore, int chave) {
         
         free(nodo);
         if (corRemovido == Preto) {
-            fixBB(arvore, arvore->nulo, pai);
+            fixBB(arvore, arvore->nulo, pai, count);
         }
-        return;
 
     // Nodo com 1 filho
     } else if (
         (nodo->esquerda != arvore->nulo || nodo->direita != arvore->nulo) &&
         !(nodo->esquerda != arvore->nulo && nodo->direita != arvore->nulo)
     ) {
-        printf("\t\tUM FILHO\n");
+        // printf("\t\tUM FILHO\n");
 
         NodoRN* filho = (nodo->esquerda != arvore->nulo ? nodo->esquerda : nodo->direita);
         Cor corRemovido = nodo->cor;
@@ -130,7 +132,7 @@ void removerChaveRN(ArvoreRN* arvore, int chave) {
         if (pai == arvore->nulo) {
             arvore->raiz = filho;
             filho->pai = arvore->nulo;
-            filho->cor = Preto;  // raiz sempre preta
+            filho->cor = Preto;
             free(nodo);
             return;
         } else if (nodo == pai->esquerda) {
@@ -143,17 +145,14 @@ void removerChaveRN(ArvoreRN* arvore, int chave) {
 
         free(nodo);
 
-        // Corrige apenas os casos de duplo-preto
         if (corRemovido == Preto) {
-            fixBB(arvore, filho, pai);
+            fixBB(arvore, filho, pai, count);
         }
-        return;
 
     // Nodo com 2 filhos
     } else {
-        printf("\t\tDOIS FILHOS\n");
+        // printf("\t\tDOIS FILHOS\n");
                 
-        // Substitui pelo sucessor in-order (minimo da subarvore direita)
         NodoRN* sucessor = nodo->direita;
         while (sucessor->esquerda != arvore->nulo) {
             sucessor = sucessor->esquerda;
@@ -161,17 +160,14 @@ void removerChaveRN(ArvoreRN* arvore, int chave) {
 
         Cor corOriginal = sucessor->cor;
 
-        // Sucessor e minimo, logo nao tem filho esquerdo
         NodoRN* filhoSucessor = sucessor->direita;
 
         if (sucessor->pai != nodo) {
-            // Sucessor nao e filho direto — desconecta e reconecta
             sucessor->pai->esquerda = filhoSucessor;
-            filhoSucessor->pai      = sucessor->pai;
-            sucessor->direita       = nodo->direita;
-            sucessor->direita->pai  = sucessor;
+            filhoSucessor->pai = sucessor->pai;
+            sucessor->direita = nodo->direita;
+            sucessor->direita->pai = sucessor;
         } else {
-            // Sucessor e filho direto — filhoSucessor ja esta no lugar certo
             filhoSucessor->pai = sucessor;
         }
 
@@ -183,23 +179,22 @@ void removerChaveRN(ArvoreRN* arvore, int chave) {
             nodo->pai->direita = sucessor;
         }
 
-        sucessor->pai           = nodo->pai;
-        sucessor->esquerda      = nodo->esquerda;
+        sucessor->pai = nodo->pai;
+        sucessor->esquerda = nodo->esquerda;
         sucessor->esquerda->pai = sucessor;
-        sucessor->cor           = nodo->cor;  // herda a cor do nodo removido
+        sucessor->cor = nodo->cor;
 
         free(nodo);
 
-        // So rebalanceia se o sucessor era preto — sua remocao pode
-        // ter reduzido a altura preta em algum caminho
         if (corOriginal == Preto) {
-            fixBB(arvore, filhoSucessor, filhoSucessor->pai);
+            fixBB(arvore, filhoSucessor, filhoSucessor->pai, count);
         }
-        return;
     }
+    return;
 }
-static void fixBB(ArvoreRN* arvore, NodoRN* nodo, NodoRN* pai) {
+static void fixBB(ArvoreRN* arvore, NodoRN* nodo, NodoRN* pai, int* count) {
     while (nodo != arvore->raiz && nodo->cor == Preto) {
+        (*count)++;
         if (nodo == pai->esquerda) {
             NodoRN* irmao = pai->direita;
 
@@ -327,10 +322,11 @@ void rotDireitaRN(ArvoreRN* arvore, NodoRN* nodo) {
     nodo->pai = esquerda;
 }
 
-void balancearRN(ArvoreRN* arvore, NodoRN* nodo) {
+void balancearRN(ArvoreRN* arvore, NodoRN* nodo, int* count) {
 
     // Garante que todos os niveis foram balanceados
     while (nodo->pai != arvore->nulo && nodo->pai->cor == Vermelho) {
+        (*count)++;
         if (nodo->pai == nodo->pai->pai->esquerda) {
             NodoRN* tio = nodo->pai->pai->direita;
 

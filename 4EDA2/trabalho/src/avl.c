@@ -62,7 +62,7 @@ NoAVL* adicionarChaveAVL(ArvoreAVL* arvore, int valor, int* count) {
         return novo;
     } else {
         NoAVL* no = adicionarNoAVL(arvore->raiz, valor, count);
-        balanceamentoAVL(arvore, no);
+        balanceamentoAVL(arvore, no, count);
         
         return no;
     }
@@ -103,8 +103,9 @@ void visitar(int valor){
     Balanceamento
 */
 
-void balanceamentoAVL(ArvoreAVL* arvore, NoAVL* no) {
+void balanceamentoAVL(ArvoreAVL* arvore, NoAVL* no, int* count) {
     while (no != NULL) {
+        (*count)++;
         int fator = fb(no);
 
         if (fator > 1) { //árvore mais profunda a esquerda
@@ -242,7 +243,7 @@ NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor, int* count) {
 
     if (arvore->raiz == NULL) {
 
-        printf("Não há valores a serem removidos...");
+        // printf("Não há valores a serem removidos...");
         return NULL;
 
     }
@@ -252,20 +253,20 @@ NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor, int* count) {
 
     if (no==NULL) {
 
-        printf ("Não há esse valor na árvore, impossível remover");
+        // printf ("Não há esse valor na árvore, impossível remover");
         return NULL;
 
     } else {
 
         if (no->esquerda==NULL && no->direita==NULL) {
 
-            printf("CASO FOLHA\n");
+            // printf("CASO FOLHA\n");
             if(no->pai==NULL){
                 arvore->raiz=NULL;
                 partidaBalanceamento = no->pai;
                 free(no);
-                balanceamentoAVL(arvore, partidaBalanceamento);
-                printf("Não havia mais nós, árvore apagada");
+                balanceamentoAVL(arvore, partidaBalanceamento, count);
+                // printf("Não havia mais nós, árvore apagada");
                 return NULL;
             }
 
@@ -273,8 +274,8 @@ NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor, int* count) {
                 no->pai->esquerda=NULL;
                 partidaBalanceamento = no->pai;
                 free(no);
-                balanceamentoAVL(arvore, partidaBalanceamento);
-                printf ("Filho era uma folha a esquerda, foi removido");
+                balanceamentoAVL(arvore, partidaBalanceamento, count);
+                // printf ("Filho era uma folha a esquerda, foi removido");
                 return NULL;
             }
 
@@ -282,14 +283,14 @@ NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor, int* count) {
                 no->pai->direita=NULL;
                 partidaBalanceamento = no->pai;
                 free(no);
-                balanceamentoAVL(arvore, partidaBalanceamento);
-                printf ("Filho era uma folha a direita, foi removido");
+                balanceamentoAVL(arvore, partidaBalanceamento, count);
+                // printf ("Filho era uma folha a direita, foi removido");
                 return NULL;
             }
 
         } else if((no->esquerda != NULL && no->direita == NULL) || (no->direita != NULL && no->esquerda == NULL)) {
 
-            printf("CASO 1 FILHO\n");
+            // printf("CASO 1 FILHO\n");
             NoAVL *filho = NULL;
 
             if (no->esquerda != NULL) {
@@ -304,8 +305,8 @@ NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor, int* count) {
                 filho->pai=NULL;
                 partidaBalanceamento = no->pai;
                 free(no);
-                balanceamentoAVL(arvore, partidaBalanceamento);
-                printf ("Remocao realizada: Filho estava conectado diretamente com a raiz...\n");
+                balanceamentoAVL(arvore, partidaBalanceamento, count);
+                // printf ("Remocao realizada: Filho estava conectado diretamente com a raiz...\n");
                 return NULL;
 
             } else if (no->pai->esquerda == no) {
@@ -314,8 +315,8 @@ NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor, int* count) {
                 filho->pai=no->pai;
                 partidaBalanceamento = no->pai;
                 free(no);
-                balanceamentoAVL(arvore, partidaBalanceamento);
-                printf("Remocao realizada: no com um filho removido (substituicao pela esquerda).\n");
+                balanceamentoAVL(arvore, partidaBalanceamento, count);
+                // printf("Remocao realizada: no com um filho removido (substituicao pela esquerda).\n");
                 return NULL;
 
             } else {
@@ -324,15 +325,15 @@ NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor, int* count) {
                 filho->pai=no->pai;
                 partidaBalanceamento = no->pai;
                 free(no);
-                balanceamentoAVL(arvore, partidaBalanceamento);
-                printf("Remocao realizada: no com um filho removido (substituicao pela direita).\n");
+                balanceamentoAVL(arvore, partidaBalanceamento, count);
+                // printf("Remocao realizada: no com um filho removido (substituicao pela direita).\n");
                 return NULL;
 
             }
 
         } else {
 
-            printf("CASO 2 FILHOS\n");
+            // printf("CASO 2 FILHOS\n");
             NoAVL* sucessor = encontrarSucessor(no->direita, count);
 
             no->valor=sucessor->valor;
@@ -344,7 +345,7 @@ NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor, int* count) {
                     sucessor->pai->esquerda=NULL;
                     partidaBalanceamento = sucessor->pai;
                     free(sucessor);
-                    balanceamentoAVL(arvore, partidaBalanceamento);
+                    balanceamentoAVL(arvore, partidaBalanceamento, count);
                     return NULL;
 
                 } else if (sucessor->pai->direita==sucessor) {
@@ -352,7 +353,7 @@ NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor, int* count) {
                     sucessor->pai->direita=NULL;
                     partidaBalanceamento = sucessor->pai;
                     free(sucessor);
-                    balanceamentoAVL(arvore, partidaBalanceamento);
+                    balanceamentoAVL(arvore, partidaBalanceamento, count);
                     return NULL;
 
                 }
@@ -367,7 +368,7 @@ NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor, int* count) {
                     filho->pai=sucessor->pai;
                     partidaBalanceamento = sucessor->pai;
                     free(sucessor);
-                    balanceamentoAVL(arvore, partidaBalanceamento);
+                    balanceamentoAVL(arvore, partidaBalanceamento, count);
                     return NULL;
 
                 } else if (sucessor->pai->direita==sucessor) {
@@ -376,7 +377,7 @@ NoAVL* remocaoAVL (ArvoreAVL* arvore, int valor, int* count) {
                     filho->pai=sucessor->pai;
                     partidaBalanceamento = sucessor->pai;
                     free(sucessor);
-                    balanceamentoAVL(arvore, partidaBalanceamento);
+                    balanceamentoAVL(arvore, partidaBalanceamento, count);
                     return NULL;
 
                 }

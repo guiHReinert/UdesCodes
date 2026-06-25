@@ -24,15 +24,15 @@ NodoB* criarNodoB(ArvoreB* arvore);
 int pesquisaBinariaB(NodoB* nodo, int chave);
 void percorrerArvoreB(NodoB* nodo, void (*visita)(int chave, void* ctx), void* ctx);
 int localizarChaveB(ArvoreB* arvore, int chave);
-NodoB* localizarNodoB(ArvoreB* arvore, int chave);
+NodoB* localizarNodoB(ArvoreB* arvore, int chave, int* count);
 NodoB* dividirNodoB(ArvoreB* arvore, NodoB* nodo);
 int overflowB(ArvoreB* arvore, NodoB* nodo);
 
 void adicionarChaveNodoB(NodoB* nodo, NodoB* direita, int chave, int* count);
 void adicionarChaveB(ArvoreB* arvore, int chave, int* count);
 
-void removerChaveNodoB(ArvoreB* arvore, NodoB* nodo, int chave);
-void removerChaveB(ArvoreB* arvore, int chave);
+void removerChaveNodoB(ArvoreB* arvore, NodoB* nodo, int chave, int* count);
+void removerChaveB(ArvoreB* arvore, int chave, int* count);
 
 void printarB(ArvoreB* arvore);
 

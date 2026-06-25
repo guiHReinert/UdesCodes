@@ -11,6 +11,7 @@
 
 typedef struct conjunto {
     int num;
+    int numAmostra;
 
     ArvoreAVL* AVL;
     ArvoreRN* RN;
@@ -30,7 +31,7 @@ typedef struct conjunto {
     Funcoes
 */
 
-Conjunto* criarConjunto(int num);
+Conjunto* criarConjunto(int num, int numAmostra);
 void carregarConjunto(Conjunto* conj);
 
 #endif

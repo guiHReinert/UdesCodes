@@ -73,9 +73,10 @@ int localizarChaveB(ArvoreB* arvore, int chave) {
     ADICAO DE CHAVES
 */
 
-NodoB* localizarNodoB(ArvoreB* arvore, int chave) {
+NodoB* localizarNodoB(ArvoreB* arvore, int chave, int* count) {
     NodoB *nodo = arvore->raiz;
     while (nodo != NULL) {
+        (*count)++;
         int i = pesquisaBinariaB(nodo, chave);
         if (nodo->filhos[i] == NULL) {
             return nodo;
@@ -149,7 +150,7 @@ static void adicionarChaveRecursivoB(ArvoreB* arvore, NodoB* nodo, NodoB* novo,
 }
 
 void adicionarChaveB(ArvoreB* arvore, int chave, int* count) {
-    NodoB* nodo = localizarNodoB(arvore, chave);
+    NodoB* nodo = localizarNodoB(arvore, chave, count);
     adicionarChaveRecursivoB(arvore, nodo, NULL, chave, count);
 }
 
@@ -199,9 +200,10 @@ static NodoB* mergeB(ArvoreB* arvore, NodoB* pai, int idx_esq) {
     return esq;
 }
 
-static void fixUnderflowB(ArvoreB* arvore, NodoB* nodo) {
+static void fixUnderflowB(ArvoreB* arvore, NodoB* nodo, int* count) {
     if (nodo->pai == NULL || nodo->total >= arvore->ordem) {return;}
 
+    (*count)++;
     NodoB* pai = nodo->pai;
 
     int idx = -1; // Indice do nodo relativo aos filhos do seu pai
@@ -251,14 +253,15 @@ static void fixUnderflowB(ArvoreB* arvore, NodoB* nodo) {
 
     } else if (irmao_esq != NULL) {
         NodoB* merged = mergeB(arvore, pai, idx - 1);
-        fixUnderflowB(arvore, merged->pai != NULL ? pai : arvore->raiz);
+        fixUnderflowB(arvore, merged->pai != NULL ? pai : arvore->raiz, count);
     } else {
         NodoB* merged = mergeB(arvore, pai, idx);
-        fixUnderflowB(arvore, merged->pai != NULL ? pai : arvore->raiz);
+        fixUnderflowB(arvore, merged->pai != NULL ? pai : arvore->raiz, count);
     }
 }
 
-void removerChaveNodoB(ArvoreB* arvore, NodoB* nodo, int chave) {
+void removerChaveNodoB(ArvoreB* arvore, NodoB* nodo, int chave, int* count) {
+    (*count)++;
     int i = pesquisaBinariaB(nodo, chave);
 
     if (i < nodo->total && nodo->chaves[i] == chave) {
@@ -270,7 +273,7 @@ void removerChaveNodoB(ArvoreB* arvore, NodoB* nodo, int chave) {
             }
             nodo->total--;
 
-            fixUnderflowB(arvore, nodo);
+            fixUnderflowB(arvore, nodo, count);
         } else {
             NodoB* filho = nodo->filhos[i];
 
@@ -281,19 +284,19 @@ void removerChaveNodoB(ArvoreB* arvore, NodoB* nodo, int chave) {
             int predecessor = filho->chaves[filho->total - 1];
             nodo->chaves[i] = predecessor;
 
-            removerChaveNodoB(arvore, filho, predecessor);
+            removerChaveNodoB(arvore, filho, predecessor, count);
         }
     } else {
         if (nodo->filhos[i] == NULL) {return;}
 
         // Procurar a chave no nodo seguinte da mesma camada
-        removerChaveNodoB(arvore, nodo->filhos[i], chave);
+        removerChaveNodoB(arvore, nodo->filhos[i], chave, count);
     }
 }
 
-void removerChaveB(ArvoreB* arvore, int chave) {
+void removerChaveB(ArvoreB* arvore, int chave, int* count) {
     if (arvore == NULL || arvore->raiz == NULL) {return;}
-    removerChaveNodoB(arvore, arvore->raiz, chave);
+    removerChaveNodoB(arvore, arvore->raiz, chave, count);
 }
 
 /*

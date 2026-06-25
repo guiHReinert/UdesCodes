@@ -33,7 +33,7 @@ NoAVL* adicionarNoAVL(NoAVL* no, int valor, int* count);
 NoAVL* adicionarChaveAVL(ArvoreAVL* arvore, int valor, int* count);
 
 static NoAVL* encontrarSucessor(NoAVL* no, int* count);
-static void balanceamentoAVL(ArvoreAVL* arvore, NoAVL* no);
+static void balanceamentoAVL(ArvoreAVL* arvore, NoAVL* no, int* count);
 static int altura(NoAVL* no);
 static int fb(NoAVL* no);
 static NoAVL* rsd(ArvoreAVL* arvore, NoAVL* no);
