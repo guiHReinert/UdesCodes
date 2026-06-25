@@ -405,4 +405,5 @@ static void printarNodoRN(ArvoreRN* arvore, NodoRN* nodo, int profundidade) {
 
 void printarRN(ArvoreRN* arvore) {
     printarNodoRN(arvore, arvore->raiz, 0);
+    printf("\n");
 }

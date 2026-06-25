@@ -403,4 +403,5 @@ static void printarNoAVL(ArvoreAVL* arvore, NoAVL* no, int profundidade) {
 
 void printarAVL(ArvoreAVL* arvore) {
     printarNoAVL(arvore, arvore->raiz, 0);
+    printf("\n");
 }

@@ -6,20 +6,26 @@
 
 ArvoreB* criarArvoreB(int ordem) {
     ArvoreB* a = malloc(sizeof(ArvoreB));
+
     a->ordem = ordem;
     a->raiz = criarNodoB(a);
+
     return a;
 }
 
 NodoB* criarNodoB(ArvoreB* arvore) {
-    int max = arvore->ordem * 2;
     NodoB* nodo = malloc(sizeof(NodoB));
+    int max = arvore->ordem * 2;
+
     nodo->pai = NULL;
     nodo->chaves = malloc(sizeof(int) * (max + 1));
     nodo->filhos = malloc(sizeof(NodoB) * (max + 2));
     nodo->total = 0;
-    for (int i = 0; i < max + 2; i++)
-    nodo->filhos[i] = NULL;
+
+    for (int i = 0; i < max + 2; i++) {
+        nodo->filhos[i] = NULL;
+    }
+    
     return nodo;
 }
 
@@ -42,18 +48,16 @@ int pesquisaBinariaB(NodoB* nodo, int chave) {
     return inicio; //não encontrou
 }
 
-// Percorre todos os nodos da arvore.
-void percorrerArvoreB(NodoB* nodo, void (visita)(int chave)) {
+void percorrerArvoreB(NodoB* nodo, void (*visita)(int chave, void* ctx), void* ctx) {
     if (nodo != NULL) {
         for (int i = 0; i < nodo->total; i++){
-            percorrerArvoreB(nodo->filhos[i], visita);
+            percorrerArvoreB(nodo->filhos[i], visita, ctx);
             printf("(%d)\n", nodo->chaves[i]);
         }
-        percorrerArvoreB(nodo->filhos[nodo->total], visita);
+        percorrerArvoreB(nodo->filhos[nodo->total], visita, ctx);
     }
 }
 
-// Busca uma chave.
 int localizarChaveB(ArvoreB* arvore, int chave) {
     NodoB *nodo = arvore->raiz;
     while (nodo != NULL) {
@@ -67,7 +71,6 @@ int localizarChaveB(ArvoreB* arvore, int chave) {
     return 0; //não encontrou
 }
 
-// Busca um nodo a partir de uma chave.
 NodoB* localizarNodoB(ArvoreB* arvore, int chave) {
     NodoB *nodo = arvore->raiz;
     while (nodo != NULL) {
@@ -80,7 +83,7 @@ NodoB* localizarNodoB(ArvoreB* arvore, int chave) {
     return NULL; //não encontrou nenhum nó
 }
 
-// Split: divide as chaves de um nodo.
+// Split: divide as chaves de um nodo
 NodoB* dividirNodoB(ArvoreB* arvore, NodoB* nodo) {
     int meio = nodo->total / 2;
     NodoB* novo = criarNodoB(arvore);
@@ -102,7 +105,6 @@ int transbordoB(ArvoreB *arvore, NodoB *nodo) {
     return nodo->total > arvore->ordem * 2;
 }
 
-// Adiciona uma chave em um nodo.
 void adicionarChaveNodoB(NodoB* nodo, NodoB* direita, int chave) {
     int i = pesquisaBinariaB(nodo, chave);
     for (int j = nodo->total - 1; j >= i; j--) {
@@ -114,12 +116,7 @@ void adicionarChaveNodoB(NodoB* nodo, NodoB* direita, int chave) {
     nodo->total++;
 }
 
-// Adicionar uma chave.
-void adicionarChaveB(ArvoreB* arvore, int chave) {
-    NodoB* nodo = localizarNodoB(arvore, chave);
-    adicionarChaveRecursivoB(arvore, nodo, NULL, chave);
-}
-void adicionarChaveRecursivoB(ArvoreB* arvore, NodoB* nodo, NodoB* novo, int chave) {
+static void adicionarChaveRecursivoB(ArvoreB* arvore, NodoB* nodo, NodoB* novo, int chave) {
 adicionarChaveNodoB(nodo, novo, chave);
 if (transbordoB(arvore, nodo)) {
     int promovido = nodo->chaves[arvore->ordem];
@@ -134,4 +131,45 @@ if (transbordoB(arvore, nodo)) {
     } else
     adicionarChaveRecursivoB(arvore, nodo->pai, novo, promovido);
     }
+}
+
+void adicionarChaveB(ArvoreB* arvore, int chave) {
+    NodoB* nodo = localizarNodoB(arvore, chave);
+    adicionarChaveRecursivoB(arvore, nodo, NULL, chave);
+}
+
+static void printarNodoB(ArvoreB *arvore, NodoB *nodo, int camada) {
+    if (!nodo) {return;}
+
+    // Separa-se a arvore na secao dos nodos mais ah direita, meio com a raiz, e
+    // os nodos mais ah esquerda, respectivamente, de cima para baixo
+    int meio = (nodo->total+1)/2;
+
+    for (int i = nodo->total; i >= meio; i--) {
+        printarNodoB(arvore, nodo->filhos[i], camada + arvore->ordem);
+    }
+
+    for (int i = 0; i < camada; i++) {printf("\t");}
+
+    printf("%s[", nodo == arvore->raiz ? "(R)" : "");
+    for (int i = 0; i < nodo->total; i++) {
+        printf("%d%s",
+            nodo->chaves[i],
+            i + 1 < nodo->total ? "|" : ""
+        );
+    }
+    printf("]\n");
+
+    for (int i = meio-1; i >= 0; i--) {
+        printarNodoB(arvore, nodo->filhos[i], camada + arvore->ordem);
+    }
+
+    if (nodo->total > 0) {
+        printf("\n");
+    }
+}
+
+void printarB(ArvoreB* arvore) {
+    if (!arvore || !arvore->raiz) {return;}
+    printarNodoB(arvore, arvore->raiz, 0);
 }
