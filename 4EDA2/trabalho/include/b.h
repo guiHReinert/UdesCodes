@@ -29,6 +29,10 @@ NodoB* dividirNodoB(ArvoreB* arvore, NodoB* nodo);
 int transbordoB(ArvoreB* arvore, NodoB* nodo);
 void adicionarChaveNodoB(NodoB* nodo, NodoB* direita, int chave);
 void adicionarChaveB(ArvoreB* arvore, int chave);
+
+void removerChaveNodoB(ArvoreB* arvore, NodoB* nodo, int chave);
+void removerChaveB(ArvoreB* arvore, int chave);
+
 void printarB(ArvoreB* arvore);
 
 #endif

@@ -1,10 +1,10 @@
-#include "include/arvores.h"
+#include "include/conjunto.h"
 
-void main(){
+int main(){
     ArvoreRN* rn = criarRN();
     ArvoreAVL* avl = criarAVL(); 
     ArvoreB* b = criarArvoreB(2);
-    int tamRN = 10, tamAVL = 10, tamB = 30;
+    int tamRN = 10, tamAVL = 10, tamB = 20;
 
     /*
         RUBRO-NEGRA
@@ -41,26 +41,56 @@ void main(){
     //     printf("chave: %d, ", -i);
     //     remocaoAVL(avl, -i);
     //     printarAVL(avl);
-        // printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
+    //     printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
     //     printf("chave: %d, ", i);
     //     remocaoAVL(avl, i);
     //     printarAVL(avl);
-        // printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
+    //     printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
     // }
 
     /*
         B
     */
 
-    int ex1[] = {25, 10, 3, 8, 14, 40, 20, 9, 2, 6, 28, 11, 1};
+    // int ex1[] = {25, 10, 3, 8, 14, 40, 20, 9, 2, 6, 28, 11, 1};
+    // for (int i=0; i < 13; i++) {
+    //     adicionarChaveB(b, ex1[i]);
+    // }
 
     // for (int i=0; i < tamB/2+1; i++) {
     //     adicionarChaveB(b, -i);
     //     adicionarChaveB(b, i);
     // }
-    for (int i=0; i < 13; i++) {
-        adicionarChaveB(b, ex1[i]);
-    }
+    // printf("\t\tRemovendo B\n\n");
+    // for (int i=0; i < tamB/2+1; i++) {
+    //     printf("chave: %d, ", -i);
+    //     removerChaveB(b, -i);
+    //     printarB(b);
+    //     printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
+    //     printf("chave: %d, ", i);
+    //     removerChaveB(b, i);
+    //     printarB(b);
+    //     printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
+    // }
 
-    printarB(b);
+    // for (int i=0; i < tamB+1; i++) {
+    //     // printf("chave: %d\n\n", i);
+    //     adicionarChaveB(b, i);
+    //     // printarB(b);
+    //     // printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n");
+    // }
+    // printarB(b);
+    // printf("\t\tRemovendo B\n\n");
+    // for (int i=0; i < tamB+1; i++) {
+    //     printf("chave: %d\n\n", i);
+    //     removerChaveB(b, i);
+    //     printarB(b);
+    //     printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n");
+    // }
+
+    Conjunto* conj = criarConjunto(10);
+    carregarConjunto(conj);
+
+
+    return 0;
 }
