@@ -13,11 +13,11 @@ Conjunto* criarConjunto(int num, int numAmostra) {
     conj->B5 = criarArvoreB(5);
     conj->B10 = criarArvoreB(10);
 
-    conj->avl = calloc(2, sizeof(int));
-    conj->rn = calloc(2, sizeof(int));
-    conj->b1 = calloc(2, sizeof(int));
-    conj->b5 = calloc(2, sizeof(int));
-    conj->b10 = calloc(2, sizeof(int));
+    conj->avl = calloc(2, sizeof(long));
+    conj->rn = calloc(2, sizeof(long));
+    conj->b1 = calloc(2, sizeof(long));
+    conj->b5 = calloc(2, sizeof(long));
+    conj->b10 = calloc(2, sizeof(long));
 
     return conj;
 }
@@ -93,10 +93,31 @@ void carregarConjunto(Conjunto* conj) {
 
     t = clock() - t;
     double tempo = ((double)t)/CLOCKS_PER_SEC;
-    printf("\n\nTempo: %lf s\n", tempo);
+    printf("Tempo do conjunto de %d:\t%lf s\n", conj->num, tempo);
 }
 
-// void exportarConjunto(Conjunto* conj) {
+void exportarConjuntos(Conjunto** conjuntos, int num, char* path) {
+    FILE* file = fopen(path, "w");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo em \"%s\".\n", path);
+        return;
+    }
 
-// }
+    fprintf(file, "n_c,n_a,avl_add,avl_rem,rn_add,rn_rem,b1_add,b1_rem,b5_add,b5_rem,b10_add,b10_rem\n");
+
+    for (int i = 0; i < num; i++) {
+        Conjunto* c = conjuntos[i];
+        fprintf(file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+            c->num, c->numAmostra,
+            c->avl[0],  c->avl[1],
+            c->rn[0],   c->rn[1],
+            c->b1[0],   c->b1[1],
+            c->b5[0],   c->b5[1],
+            c->b10[0],  c->b10[1]
+        );
+    }
+
+    fclose(file);
+    printf("Exportado para %s.\n", path);
+}
 

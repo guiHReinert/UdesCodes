@@ -33,5 +33,6 @@ typedef struct conjunto {
 
 Conjunto* criarConjunto(int num, int numAmostra);
 void carregarConjunto(Conjunto* conj);
+void exportarConjuntos(Conjunto** conjuntos, int num, char* path);
 
 #endif
