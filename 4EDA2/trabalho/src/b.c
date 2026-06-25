@@ -115,19 +115,22 @@ int overflowB(ArvoreB *arvore, NodoB *nodo) {
     return nodo->total > arvore->ordem * 2;
 }
 
-void adicionarChaveNodoB(NodoB* nodo, NodoB* direita, int chave) {
+void adicionarChaveNodoB(NodoB* nodo, NodoB* direita, int chave, int* count) {
     int i = pesquisaBinariaB(nodo, chave);
     for (int j = nodo->total - 1; j >= i; j--) {
         nodo->chaves[j + 1] = nodo->chaves[j];
         nodo->filhos[j + 2] = nodo->filhos[j + 1];
+        // (*count)++;
     }
     nodo->chaves[i] = chave;
     nodo->filhos[i + 1] = direita;
     nodo->total++;
 }
 
-static void adicionarChaveRecursivoB(ArvoreB* arvore, NodoB* nodo, NodoB* novo, int chave) {
-    adicionarChaveNodoB(nodo, novo, chave);
+static void adicionarChaveRecursivoB(ArvoreB* arvore, NodoB* nodo, NodoB* novo,
+    int chave, int* count) {
+    (*count)++;
+    adicionarChaveNodoB(nodo, novo, chave, count);
     if (overflowB(arvore, nodo)) {
         int promovido = nodo->chaves[arvore->ordem];
         NodoB* novo = dividirNodoB(arvore, nodo);
@@ -135,19 +138,19 @@ static void adicionarChaveRecursivoB(ArvoreB* arvore, NodoB* nodo, NodoB* novo, 
         if (nodo->pai == NULL) {
             NodoB* raiz = criarNodoB(arvore);
             raiz->filhos[0] = nodo;
-            adicionarChaveNodoB(raiz, novo, promovido);
+            adicionarChaveNodoB(raiz, novo, promovido, count);
             nodo->pai = raiz;
             novo->pai = raiz;
             arvore->raiz = raiz;
         } else {
-            adicionarChaveRecursivoB(arvore, nodo->pai, novo, promovido);
+            adicionarChaveRecursivoB(arvore, nodo->pai, novo, promovido, count);
         }
     }
 }
 
-void adicionarChaveB(ArvoreB* arvore, int chave) {
+void adicionarChaveB(ArvoreB* arvore, int chave, int* count) {
     NodoB* nodo = localizarNodoB(arvore, chave);
-    adicionarChaveRecursivoB(arvore, nodo, NULL, chave);
+    adicionarChaveRecursivoB(arvore, nodo, NULL, chave, count);
 }
 
 /*

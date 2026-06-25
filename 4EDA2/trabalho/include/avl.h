@@ -24,21 +24,22 @@ ArvoreAVL* criarAVL(void);
 static NoAVL* criarNoAVL(NoAVL* pai, int valor);
 
 int isVaziaAVL(ArvoreAVL* arvore);
-NoAVL* adicionarChaveAVL(ArvoreAVL* arvore, int valor, int* count);
-NoAVL* localizarNoAVL(NoAVL* no, int valor);
+NoAVL* localizarNoAVL(NoAVL* no, int valor, int* count);
 NoAVL* remocaoAVL(ArvoreAVL* arvore, int valor, int* count);
 void percorrerAVL(NoAVL* no, void (*callback)(int));
 void visitar(int valor);
 
 NoAVL* adicionarNoAVL(NoAVL* no, int valor, int* count);
-static NoAVL* encontrarSucessor(NoAVL* no);
-static void balanceamentoAVL(ArvoreAVL* arvore, NoAVL* no, int* count);
+NoAVL* adicionarChaveAVL(ArvoreAVL* arvore, int valor, int* count);
+
+static NoAVL* encontrarSucessor(NoAVL* no, int* count);
+static void balanceamentoAVL(ArvoreAVL* arvore, NoAVL* no);
 static int altura(NoAVL* no);
 static int fb(NoAVL* no);
-static NoAVL* rsd(ArvoreAVL* arvore, NoAVL* no, int* count);
-static NoAVL* rse(ArvoreAVL* arvore, NoAVL* no, int* count);
-static NoAVL* rdd(ArvoreAVL* arvore, NoAVL* no, int* count);
-static NoAVL* rde(ArvoreAVL* arvore, NoAVL* no, int* count);
+static NoAVL* rsd(ArvoreAVL* arvore, NoAVL* no);
+static NoAVL* rse(ArvoreAVL* arvore, NoAVL* no);
+static NoAVL* rdd(ArvoreAVL* arvore, NoAVL* no);
+static NoAVL* rde(ArvoreAVL* arvore, NoAVL* no);
 
 void printarAVL(ArvoreAVL* arvore);
 

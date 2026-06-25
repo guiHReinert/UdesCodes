@@ -1,96 +1,44 @@
 #include "include/conjunto.h"
 
 int main(){
-    ArvoreRN* rn = criarRN();
-    ArvoreAVL* avl = criarAVL(); 
-    ArvoreB* b = criarArvoreB(2);
-    int tamRN = 10, tamAVL = 10, tamB = 20;
+    srand(time(NULL));   
 
-    /*
-        RUBRO-NEGRA
-    */
+    int sumAVL=0, sumRN=0, sumB1=0, sumB5=0, sumB10=0,
+        numConjuntos[] =
+        {10, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000};
 
-    // for (int i=0; i < tamRN/2+1; i++) {
-    //     adicionarChaveRN(rn, -i);
-    //     adicionarChaveRN(rn, i);
-    // }
-    // printarRN(rn);
+    float qnt = sizeof(numConjuntos)/sizeof(numConjuntos[0]);
     
-    // printf("\t\tRemovendo Arvore Rubro-Negra\n\n");
-    // for (int i=0; i < tamRN/2+1; i++) {
-    //     removerChaveRN(rn, -i);
-    //     printarRN(rn);
-        // printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
-    //     removerChaveRN(rn, i);
-    //     printarRN(rn);
-        // printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
-    // }
+    clock_t t = clock();
+    for (int n=0; n < qnt; n++) {
+        printf("\n\t\tCONJUNTO %d: %d", n+1, numConjuntos[n]);
+        Conjunto* conj = criarConjunto(numConjuntos[n]);
+        carregarConjunto(conj);
 
-    /*
-        AVL
-    */
+        printf("\nsumAVL: %d\n", conj->avl[0]);
+        printf("sumRN: %d\n", conj->rn[0]);
+        printf("sumB1: %d\n", conj->b1[0]);
+        printf("sumB5: %d\n", conj->b5[0]);
+        printf("sumB10: %d\n\n", conj->b10[0]);
+        printf("Media: %.2f\n", (conj->avl[0] + conj->rn[0] + conj->b1[0]
+            + conj->b5[0] + conj->b10[0]) / 5.0);
 
-    // for (int i=0; i < tamAVL/2+1; i++) {
-    //     adicionarChaveAVL(avl, -i);
-    //     adicionarChaveAVL(avl, i);
-    // }
-    // printarAVL(avl);
+        sumAVL += conj->avl[0];
+        sumRN += conj->rn[0];
+        sumB1 += conj->b1[0];
+        sumB5 += conj->b5[0];
+        sumB10 += conj->b10[0];
+    }
+    t = clock() - t;
+    double tempoTotal = ((double)t)/CLOCKS_PER_SEC;
 
-    // printf("\t\tRemovendo AVL\n\n");
-    // for (int i=0; i < tamAVL/2+1; i++) {
-    //     printf("chave: %d, ", -i);
-    //     remocaoAVL(avl, -i);
-    //     printarAVL(avl);
-    //     printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
-    //     printf("chave: %d, ", i);
-    //     remocaoAVL(avl, i);
-    //     printarAVL(avl);
-    //     printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
-    // }
-
-    /*
-        B
-    */
-
-    // int ex1[] = {25, 10, 3, 8, 14, 40, 20, 9, 2, 6, 28, 11, 1};
-    // for (int i=0; i < 13; i++) {
-    //     adicionarChaveB(b, ex1[i]);
-    // }
-
-    // for (int i=0; i < tamB/2+1; i++) {
-    //     adicionarChaveB(b, -i);
-    //     adicionarChaveB(b, i);
-    // }
-    // printf("\t\tRemovendo B\n\n");
-    // for (int i=0; i < tamB/2+1; i++) {
-    //     printf("chave: %d, ", -i);
-    //     removerChaveB(b, -i);
-    //     printarB(b);
-    //     printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
-    //     printf("chave: %d, ", i);
-    //     removerChaveB(b, i);
-    //     printarB(b);
-    //     printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n\n");
-    // }
-
-    // for (int i=0; i < tamB+1; i++) {
-    //     // printf("chave: %d\n\n", i);
-    //     adicionarChaveB(b, i);
-    //     // printarB(b);
-    //     // printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n");
-    // }
-    // printarB(b);
-    // printf("\t\tRemovendo B\n\n");
-    // for (int i=0; i < tamB+1; i++) {
-    //     printf("chave: %d\n\n", i);
-    //     removerChaveB(b, i);
-    //     printarB(b);
-    //     printf("\n"); for (int i=0; i < 50; i++) {printf("-");} printf("\n");
-    // }
-
-    Conjunto* conj = criarConjunto(10);
-    carregarConjunto(conj);
-
+    printf("\n\t\tMEDIA POR ARVORE\n\n");
+    printf("Tempo total: %f\n\n", tempoTotal);
+    printf("sumAVL: %.2f\n", (double)sumAVL/qnt);
+    printf("sumRN: %.2f\n", (double)sumRN/qnt);
+    printf("sumB1: %.2f\n", (double)sumB1/qnt);
+    printf("sumB5: %.2f\n", (double)sumB5/qnt);
+    printf("sumB10: %.2f\n", (double)sumB10/qnt);
 
     return 0;
 }

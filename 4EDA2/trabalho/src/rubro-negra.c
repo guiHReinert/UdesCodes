@@ -55,14 +55,15 @@ NodoRN* localizarNodoRN(ArvoreRN* arvore, NodoRN* nodo, int chave) {
 }
 
 // Busca da posicao do novo nodo
-static NodoRN* adicionarNodoRN(ArvoreRN* arvore, NodoRN* nodo, int chave) {
+static NodoRN* adicionarNodoRN(ArvoreRN* arvore, NodoRN* nodo, int chave, int* count) {
+    (*count)++;
     if (chave > nodo->valor) {
         if (nodo->direita == arvore->nulo) {
             NodoRN* nodoNovo = criarNodoRN(arvore, nodo, chave, Vermelho);
             nodo->direita = nodoNovo;
             return nodoNovo;
         } else {
-            return adicionarNodoRN(arvore, nodo->direita, chave);
+            return adicionarNodoRN(arvore, nodo->direita, chave, count);
         }
     } else {
         if (nodo->esquerda == arvore->nulo) {
@@ -70,16 +71,16 @@ static NodoRN* adicionarNodoRN(ArvoreRN* arvore, NodoRN* nodo, int chave) {
             nodo->esquerda = nodoNovo;
             return nodoNovo;
         } else {
-            return adicionarNodoRN(arvore, nodo->esquerda, chave);
+            return adicionarNodoRN(arvore, nodo->esquerda, chave, count);
         }
     }
 }
 
-void adicionarChaveRN(ArvoreRN* arvore, int chave) {
+void adicionarChaveRN(ArvoreRN* arvore, int chave, int* count) {
     if (arvore->raiz == arvore->nulo) {
         arvore->raiz = criarNodoRN(arvore, arvore->nulo, chave, Preto);
     } else {
-        NodoRN* nodo = adicionarNodoRN(arvore, arvore->raiz, chave);
+        NodoRN* nodo = adicionarNodoRN(arvore, arvore->raiz, chave, count);
         balancearRN(arvore, nodo);
     }
 }

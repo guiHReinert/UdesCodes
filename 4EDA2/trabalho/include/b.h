@@ -26,9 +26,10 @@ void percorrerArvoreB(NodoB* nodo, void (*visita)(int chave, void* ctx), void* c
 int localizarChaveB(ArvoreB* arvore, int chave);
 NodoB* localizarNodoB(ArvoreB* arvore, int chave);
 NodoB* dividirNodoB(ArvoreB* arvore, NodoB* nodo);
-int transbordoB(ArvoreB* arvore, NodoB* nodo);
-void adicionarChaveNodoB(NodoB* nodo, NodoB* direita, int chave);
-void adicionarChaveB(ArvoreB* arvore, int chave);
+int overflowB(ArvoreB* arvore, NodoB* nodo);
+
+void adicionarChaveNodoB(NodoB* nodo, NodoB* direita, int chave, int* count);
+void adicionarChaveB(ArvoreB* arvore, int chave, int* count);
 
 void removerChaveNodoB(ArvoreB* arvore, NodoB* nodo, int chave);
 void removerChaveB(ArvoreB* arvore, int chave);
