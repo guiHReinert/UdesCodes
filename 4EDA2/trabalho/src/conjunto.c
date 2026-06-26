@@ -96,16 +96,18 @@ void carregarConjunto(Conjunto* conj) {
     printf("Tempo do conjunto de %d:\t%lf s\n", conj->num, tempo);
 }
 
-void exportarConjuntos(Conjunto** conjuntos, int num, char* path) {
+void exportarConjuntos(Conjunto** conjuntos, int numConjuntos, char* path) {
     FILE* file = fopen(path, "w");
     if (file == NULL) {
         printf("Erro ao abrir o arquivo em \"%s\".\n", path);
         return;
     }
 
-    fprintf(file, "n_c,n_a,avl_add,avl_rem,rn_add,rn_rem,b1_add,b1_rem,b5_add,b5_rem,b10_add,b10_rem\n");
+    fprintf(file,
+        "n_c,n_a,avl_add,avl_rem,rn_add,rn_rem,b1_add,b1_rem,b5_add,b5_rem,b10_add,b10_rem\n"
+    );
 
-    for (int i = 0; i < num; i++) {
+    for (int i = 0; i < numConjuntos; i++) {
         Conjunto* c = conjuntos[i];
         fprintf(file, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
             c->num, c->numAmostra,
@@ -116,8 +118,45 @@ void exportarConjuntos(Conjunto** conjuntos, int num, char* path) {
             c->b10[0],  c->b10[1]
         );
     }
-
+    
     fclose(file);
-    printf("Exportado para %s.\n", path);
+    printf("Conjuntos exportados para \"%s\"\n", path);
+}
+
+void exportarMedias(Conjunto** conjuntos, int numConjuntos, char* path) {
+    FILE* file = fopen(path, "w");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo em \"%s\".\n", path);
+        return;
+    }
+    float* medias = malloc(sizeof(float)*10);
+    for (int m=0; m<10; m++) {medias[m] = 0;}
+
+    for (int c=0; c < numConjuntos; c++) {
+        medias[0] += conjuntos[c]->avl[0]; 
+        medias[1] += conjuntos[c]->avl[1]; 
+        medias[2] += conjuntos[c]->rn[0];
+        medias[3] += conjuntos[c]->rn[1];
+        medias[4] += conjuntos[c]->b1[0];
+        medias[5] += conjuntos[c]->b1[1];
+        medias[6] += conjuntos[c]->b5[0];
+        medias[7] += conjuntos[c]->b5[1];
+        medias[8] += conjuntos[c]->b10[0];
+        medias[9] += conjuntos[c]->b10[1];
+    }
+    for (int m=0; m < numConjuntos; m++) {
+        medias[m] /= numConjuntos;
+    }
+
+    fprintf(file,
+        "avl_add,avl_rem,rn_add,rn_rem,b1_add,b1_rem,b5_add,b5_rem,b10_add,b10_rem\n"
+    );
+    fprintf(file,
+        "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n",
+        medias[0], medias[1], medias[2], medias[3], medias[4],
+        medias[5], medias[6], medias[7], medias[8], medias[9]
+    );
+    fclose(file);
+    printf("Medias exportadas para \"%s\"\n", path);
 }
 

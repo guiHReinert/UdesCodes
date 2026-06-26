@@ -3,12 +3,11 @@
 int main(){
     srand(time(NULL));   
 
-    char* path = "output/conjuntos.csv";
-
-    int numAmostras = 10,
+    int numAmostras = 1,
         nums[] =
-        {10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000};
+        // {10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000};
         // {10, 20, 50};
+        {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
     int numConjuntos = sizeof(nums)/sizeof(nums[0]);
 
     Conjunto** conjuntos = malloc(sizeof(Conjunto)*numConjuntos);
@@ -16,7 +15,8 @@ int main(){
         conjuntos[c] = criarConjunto(nums[c], numAmostras);
         carregarConjunto(conjuntos[c]);
     }
-    exportarConjuntos(conjuntos, numConjuntos, path);
+    exportarConjuntos(conjuntos, numConjuntos, "output/conjuntos.csv");
+    exportarMedias(conjuntos, numConjuntos, "output/medias.csv");
 
 
 
