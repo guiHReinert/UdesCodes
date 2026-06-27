@@ -3,11 +3,9 @@
 int main(){
     srand(time(NULL));   
 
-    int numAmostras = 1,
+    int numAmostras = 10,
         nums[] =
-        // {10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000};
-        // {10, 20, 50};
-        {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+        {10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000};
     int numConjuntos = sizeof(nums)/sizeof(nums[0]);
 
     Conjunto** conjuntos = malloc(sizeof(Conjunto)*numConjuntos);
