@@ -5,7 +5,7 @@
 No ambiente Linux, podem ser realizadas diretamente pelo script BASH `out.sh`:
 
 ```bash
-./out.sh
+bash out.sh
 ```
 
 Ou separadamente:
