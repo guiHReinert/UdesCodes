@@ -10,7 +10,7 @@ Original file is located at
 import pandas as pd
 import matplotlib.pyplot as plt
 
-dados = pd.read_csv("conjuntos.csv")
+dados = pd.read_csv("output/conjuntos.csv")
 
 colunas_necessarias = [
     "n_c", "avl_add", "rn_add", "b1_add", "b5_add", "b10_add",
@@ -30,11 +30,13 @@ plt.plot(dados["n_c"], dados["b10_add"], label="Árvore B (ordem 10)", linewidth
 plt.title("Esforço computacional da operação de insercao")
 plt.xlabel("Tamanho do conjunto de dados")
 plt.ylabel("Esforço computacional médio")
+
+plt.yscale("log")
+
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
-plt.savefig("grafico_insercao.png", dpi=300)
-plt.show()
+plt.savefig("output/grafico_insercao.png", dpi=300)
 
 # GRÁFICO 2 - Remoção
 plt.figure(figsize=(12, 6))
@@ -48,8 +50,12 @@ plt.plot(dados["n_c"], dados["b10_rem"], label="Árvore B (ordem 10)", linewidth
 plt.title("Esforço computacional da operação de remoção")
 plt.xlabel("Tamanho do conjunto de dados")
 plt.ylabel("Esforço computacional médio")
+
+plt.yscale("log")
+
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
-plt.savefig("grafico_remocao.png", dpi=300)
-plt.show()
+plt.savefig("output/grafico_remocao.png", dpi=300)
+
+print("Graficos exportados para \"output\".")
