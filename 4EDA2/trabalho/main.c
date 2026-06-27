@@ -5,7 +5,8 @@ int main(){
 
     int numAmostras = 10,
         nums[] =
-        {10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000};
+        {10, 20, 50, 100, 200, 500, 1000, 2000, 3000, 4000, 5000, 6000, 7000,
+            8000, 9000, 10000};
     int numConjuntos = sizeof(nums)/sizeof(nums[0]);
 
     Conjunto** conjuntos = malloc(sizeof(Conjunto)*numConjuntos);
