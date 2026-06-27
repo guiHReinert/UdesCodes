@@ -1,15 +1,6 @@
 
 # Trabalho de Avaliação de Desempenho de Árvores
 
-**Integrantes**:
-
-- Ana Luiza Capristrano;
-- Emily Stephanny da Silva.
-- Gabriela Pauli de OLiveira;
-- Guilherme Hoening Reinert.
-
-## Enunciado
-
 O objetivo deste trabalho consiste em analisar a complexidade algorítmica das operações de adição e remoção de nós (considerando o balanceamento) em árvores AVL, rubro-negra e B.
 
 - No caso da árvore B, devem ser consideradas o parâmetro de ordem da árvore igual a 1, 5 e 10.

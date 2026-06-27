@@ -1,5 +1,12 @@
 # Avaliação de Desempenho de Árvores
 
+## Integrantes
+
+- Ana Luiza Capristrano
+- Emily Stephanny da Silva
+- Gabriela Pauli de OLiveira
+- Guilherme Hoening Reinert
+
 ## Compilação e Execução do Trabalho
 
 No ambiente Linux, podem ser realizadas diretamente pelo script BASH `out.sh`:
