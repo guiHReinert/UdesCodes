@@ -58,4 +58,4 @@ plt.legend()
 plt.tight_layout()
 plt.savefig("output/grafico_remocao.png", dpi=300)
 
-print("Graficos exportados para \"output\".")
+print("Graficos exportados para \"output/\".")

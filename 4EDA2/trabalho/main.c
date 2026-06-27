@@ -3,11 +3,12 @@
 int main(){
     srand(time(NULL));   
 
-    int numAmostras = 10, numConjuntos = 100;
+    int numAmostras = 10, numConjuntos = 50;
     int* nums = malloc(sizeof(int)*numConjuntos);
 
+    int passo = 10000 / numConjuntos;
     for (int n=0; n < numConjuntos; n++) {
-        nums[n] = 100 + 100*n;
+        nums[n] = passo + passo*n;
     }
 
     Conjunto **conjuntos = malloc(sizeof *conjuntos * numConjuntos);  
