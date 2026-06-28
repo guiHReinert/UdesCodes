@@ -9,7 +9,7 @@
 
 ## Compilação e Execução do Trabalho
 
-No ambiente Linux, podem ser realizadas diretamente pelo script BASH `out.sh`:
+No ambiente Linux podem ser realizadas diretamente pelo script BASH `out.sh`:
 
 ```bash
 bash out.sh
