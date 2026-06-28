@@ -28,5 +28,6 @@ gcc main.c src/avl.c src/b.c src/rubro-negra.c src/conjunto.c -o main
 
 ```bash
 source .venv/bin/activate
-python graficos.py
+python3 graficos.py
 ```
+
