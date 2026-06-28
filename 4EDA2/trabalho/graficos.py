@@ -31,7 +31,7 @@ plt.title("Esforço computacional da operação de insercao")
 plt.xlabel("Tamanho do conjunto de dados")
 plt.ylabel("Esforço computacional médio")
 
-plt.yscale("log")
+# plt.yscale("log")
 
 plt.grid(True)
 plt.legend()
@@ -51,7 +51,7 @@ plt.title("Esforço computacional da operação de remoção")
 plt.xlabel("Tamanho do conjunto de dados")
 plt.ylabel("Esforço computacional médio")
 
-plt.yscale("log")
+# plt.yscale("log")
 
 plt.grid(True)
 plt.legend()
