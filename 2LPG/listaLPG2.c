@@ -187,8 +187,8 @@ int fibo(int size){
         nums[c] = sum;
     }
     return sum;
-
 }
+
 void fstFibon(){
     int qnt;
     scanf("%d", &qnt);
